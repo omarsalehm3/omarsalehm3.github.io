@@ -60,7 +60,7 @@ body.light .chat-input{color:#1a1a2e}
     <div class="msg bot">
       <div class="msg-avatar"><i class="fas fa-robot"></i></div>
       <div>
-        <div class="msg-content">Hi! I am your AI assistant powered by Gemini. I can help with questions, writing, coding, math, and more!<br><br>Please enter your Gemini API key in the settings below to get started.</div>
+        <div class="msg-content">Hi! I am your AI assistant powered by Gemini. Ask me anything!</div>
         <div class="msg-time">Just now</div>
       </div>
     </div>
@@ -72,15 +72,6 @@ body.light .chat-input{color:#1a1a2e}
 </div>
 
 <div class="container" style="padding-top:0">
-  <div class="card mt-2">
-    <h3 style="margin-bottom:12px"><i class="fas fa-key"></i> Gemini API Setup</h3>
-    <p class="text-muted" style="margin-bottom:12px">Get your free API key from <a href="https://aistudio.google.com/app/apikey" target="_blank" style="color:#58a6ff">Google AI Studio</a> (free, no credit card needed)</p>
-    <div class="flex" style="gap:10px">
-      <input type="password" id="geminiKey" placeholder="Enter your Gemini API key...">
-      <button class="btn btn-success" onclick="saveGeminiKey()"><i class="fas fa-save"></i> Save</button>
-    </div>
-    <div id="keyStatus" class="text-muted mt-1"></div>
-  </div>
   <div class="card mt-2" style="padding:12px 20px">
     <div class="flex flex-wrap" style="gap:8px;align-items:center">
       <span class="text-muted" style="font-size:0.85rem">Quick prompts:</span>
@@ -95,26 +86,9 @@ body.light .chat-input{color:#1a1a2e}
 
 <script type="module" src="firebase-config.js"></script>
 <script>
-var geminiKey = localStorage.getItem('gemini_key') || '';
+var GEMINI_KEY = 'AIzaSyDrHzSV2zXYqEj-DLSDBE511us_agqqiM4';
+var GEMINI_MODEL = 'gemini-2.5-flash';
 var chatHistory = [];
-
-if (geminiKey) {
-  document.getElementById('geminiKey').value = geminiKey;
-  document.getElementById('keyStatus').textContent = 'API key loaded!';
-  document.getElementById('keyStatus').style.color = '#3fb950';
-}
-
-function saveGeminiKey() {
-  geminiKey = document.getElementById('geminiKey').value.trim();
-  if (geminiKey) {
-    localStorage.setItem('gemini_key', geminiKey);
-    document.getElementById('keyStatus').textContent = 'Saved! You can now chat.';
-    document.getElementById('keyStatus').style.color = '#3fb950';
-  } else {
-    document.getElementById('keyStatus').textContent = 'Please enter a valid key.';
-    document.getElementById('keyStatus').style.color = '#f85149';
-  }
-}
 
 function setPrompt(text) {
   document.getElementById('chatInput').value = text;
@@ -134,7 +108,7 @@ function clearChat() {
 function addMessage(text, role) {
   var msgs = document.getElementById('chatMessages');
   var time = new Date().toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'});
-  var formatted = text
+  var safe = text
     .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;')
@@ -145,7 +119,7 @@ function addMessage(text, role) {
   var outer = document.createElement('div');
   outer.className = 'msg ' + role;
   var icon = role === 'user' ? 'fa-user' : 'fa-robot';
-  outer.innerHTML = '<div class="msg-avatar"><i class="fas ' + icon + '"></i></div><div><div class="msg-content">' + formatted + '</div><div class="msg-time">' + time + '</div></div>';
+  outer.innerHTML = '<div class="msg-avatar"><i class="fas ' + icon + '"></i></div><div><div class="msg-content">' + safe + '</div><div class="msg-time">' + time + '</div></div>';
   msgs.appendChild(outer);
   msgs.scrollTop = msgs.scrollHeight;
 }
@@ -169,10 +143,6 @@ async function sendMessage() {
   var input = document.getElementById('chatInput');
   var text = input.value.trim();
   if (!text) return;
-  if (!geminiKey) {
-    addMessage('Please save your Gemini API key first!', 'bot');
-    return;
-  }
   input.value = '';
   input.style.height = 'auto';
   addMessage(text, 'user');
@@ -180,7 +150,7 @@ async function sendMessage() {
   document.getElementById('sendBtn').disabled = true;
   showTyping();
   try {
-    var r = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=' + geminiKey, {
+    var r = await fetch('https://generativelanguage.googleapis.com/v1beta/models/' + GEMINI_MODEL + ':generateContent?key=' + GEMINI_KEY, {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({contents: chatHistory, generationConfig: {maxOutputTokens: 1000, temperature: 0.7}})
@@ -194,11 +164,11 @@ async function sendMessage() {
     } else if (data.error) {
       addMessage('Error: ' + data.error.message, 'bot');
     } else {
-      addMessage('Sorry, could not get a response. Check your API key.', 'bot');
+      addMessage('Sorry, could not get a response. Please try again.', 'bot');
     }
   } catch(e) {
     removeTyping();
-    addMessage('Connection error. Check your internet and API key.', 'bot');
+    addMessage('Connection error. Please check your internet and try again.', 'bot');
   } finally {
     document.getElementById('sendBtn').disabled = false;
   }
