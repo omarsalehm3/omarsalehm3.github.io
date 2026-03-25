@@ -1,94 +1,199 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>OGuard Hub - One place. Every tool. Always guarded.</title>
-<link rel="stylesheet" href="style.css">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-</head>
-<body>
-<nav class="navbar">
-  <div class="nav-brand"><i class="fas fa-shield-alt"></i> OGuard Hub</div>
-  <div class="nav-links">
-    <a href="index.html"><i class="fas fa-home"></i> Home</a>
-    <a href="todo.html"><i class="fas fa-check-square"></i> To-Do</a>
-    <a href="timer.html"><i class="fas fa-clock"></i> Timer</a>
-    <a href="converter.html"><i class="fas fa-exchange-alt"></i> Converter</a>
-    <a href="budget.html"><i class="fas fa-wallet"></i> Budget</a>
-    <a href="quiz.html"><i class="fas fa-question-circle"></i> Quiz</a>
-    <a href="notes.html"><i class="fas fa-sticky-note"></i> Notes</a>
-    <a href="chatbot.html"><i class="fas fa-robot"></i> AI Chat</a>
-  </div>
-  <div class="flex" style="gap:8px;align-items:center">
-    <span id="navUser" style="display:none;font-size:0.85rem;color:#8b949e"></span>
-    <button class="btn btn-secondary" style="padding:6px 14px;font-size:0.8rem" onclick="logoutUser()"><i class="fas fa-sign-out-alt"></i> Logout</button>
-    <button class="theme-toggle" onclick="toggleTheme()"><i class="fas fa-moon"></i></button>
-  </div>
-</nav>
+  <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1.0">
+      <title>OGuard Hub — Your All-in-One Productivity Suite</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+          /* Floating orbs animation */
+          .orb {
+                  position: absolute;
+                  border-radius: 50%;
+                  filter: blur(60px);
+                  pointer-events: none;
+                  animation: float 8s ease-in-out infinite;
+          }
+          .orb-1 { width:400px;height:400px;background:rgba(79,142,247,0.08);top:-100px;left:-100px;animation-delay:0s; }
+          .orb-2 { width:300px;height:300px;background:rgba(163,113,247,0.07);top:50px;right:-80px;animation-delay:3s; }
+          .orb-3 { width:200px;height:200px;background:rgba(48,207,208,0.06);bottom:0;left:40%;animation-delay:5s; }
+          .hero-badge { animation: fadeUp 0.5s ease both; }
+          .typing-cursor::after { content:'|'; animation: pulse 1s infinite; }
+          /* Staggered card animations */
+          .tool-card:nth-child(1){animation-delay:0.05s}
+          .tool-card:nth-child(2){animation-delay:0.1s}
+          .tool-card:nth-child(3){animation-delay:0.15s}
+          .tool-card:nth-child(4){animation-delay:0.2s}
+          .tool-card:nth-child(5){animation-delay:0.25s}
+          .tool-card:nth-child(6){animation-delay:0.3s}
+          .tool-card:nth-child(7){animation-delay:0.35s}
+          .tool-card:nth-child(8){animation-delay:0.4s}
+          .tool-card { animation: fadeUp 0.5s ease both; }
+          /* Feature highlight strip */
+          .feature-strip { display:flex;gap:32px;flex-wrap:wrap;justify-content:center;padding:32px 30px;border-top:1px solid var(--border);border-bottom:1px solid var(--border);margin-bottom:64px;animation:fadeUp 0.5s 0.5s ease both; }
+          .feature-item { display:flex;align-items:center;gap:10px;color:var(--text2);font-size:0.85rem;font-weight:500; }
+          .feature-item i { color:var(--blue);font-size:1rem; }
+          /* Marquee */
+          .marquee-wrap { overflow:hidden;padding:16px 0;border-top:1px solid var(--border);border-bottom:1px solid var(--border);margin-bottom:60px; }
+          .marquee { display:flex;gap:48px;animation:marquee 20s linear infinite;white-space:nowrap; }
+          .marquee-item { display:inline-flex;align-items:center;gap:8px;color:var(--text3);font-size:0.8rem;font-weight:600;letter-spacing:1px;text-transform:uppercase; }
+          .marquee-item i { color:var(--blue); }
+          @keyframes marquee { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
+        </style>
+  </head>
+  <body>
+      <nav class="navbar">
+            <div class="nav-brand">
+                    <div class="nav-brand-icon"><i class="fas fa-shield-alt"></i>i></div>div>
+                    OGuard Hub
+            </div>div>
+            <div class="nav-links">
+                    <a href="index.html" class="active"><i class="fas fa-home"></i>i> Home</a>a>
+                    <a href="todo.html"><i class="fas fa-check-square"></i>i> To-Do</a>a>
+                    <a href="timer.html"><i class="fas fa-clock"></i>i> Timer</a>a>
+                    <a href="converter.html"><i class="fas fa-exchange-alt"></i>i> Converter</a>a>
+                    <a href="budget.html"><i class="fas fa-wallet"></i>i> Budget</a>a>
+                    <a href="notes.html"><i class="fas fa-sticky-note"></i>i> Notes</a>a>
+                    <a href="habits.html"><i class="fas fa-fire"></i>i> Habits</a>a>
+                    <a href="passwords.html"><i class="fas fa-key"></i>i> Passwords</a>a>
+                    <a href="chatbot.html"><i class="fas fa-robot"></i>i> AI Chat</a>a>
+            </div>div>
+            <div class="nav-right">
+                    <span id="navUser" style="display:none;font-size:0.82rem;color:var(--text2)"></span>span>
+                    <button class="btn btn-secondary" style="padding:6px 14px;font-size:0.8rem" onclick="logoutUser()"><i class="fas fa-sign-out-alt"></i>i> Logout</button>button>
+                    <button class="theme-toggle" onclick="toggleTheme()"><i class="fas fa-moon"></i>i></button>button>
+            </div>div>
+      </nav>nav>
 
-<section class="hero">
-  <div class="hero-content">
-    <h1>Welcome to OGuard Hub 🛡️</h1>
-    <p>One place. Every tool. Always guarded.</p>
-    <a href="chatbot.html" class="hero-btn"><i class="fas fa-robot"></i> Chat with AI Assistant</a>
-  </div>
-</section>
-
-<section class="tools-grid">
-  <a href="todo.html" class="tool-card">
-    <div class="tool-icon" style="background:linear-gradient(135deg,#667eea,#764ba2)"><i class="fas fa-check-square"></i></div>
-    <h3>To-Do List</h3>
-    <p>Organize your tasks and boost productivity</p>
-  </a>
-  <a href="timer.html" class="tool-card">
-    <div class="tool-icon" style="background:linear-gradient(135deg,#f093fb,#f5576c)"><i class="fas fa-clock"></i></div>
-    <h3>Pomodoro Timer</h3>
-    <p>Focus better with timed work sessions</p>
-  </a>
-  <a href="converter.html" class="tool-card">
-    <div class="tool-icon" style="background:linear-gradient(135deg,#4facfe,#00f2fe)"><i class="fas fa-exchange-alt"></i></div>
-    <h3>Unit Converter</h3>
-    <p>Convert length, weight, temperature and more</p>
-  </a>
-  <a href="budget.html" class="tool-card">
-    <div class="tool-icon" style="background:linear-gradient(135deg,#43e97b,#38f9d7)"><i class="fas fa-wallet"></i></div>
-    <h3>Budget Calculator</h3>
-    <p>Track income and expenses easily</p>
-  </a>
-  <a href="quiz.html" class="tool-card">
-    <div class="tool-icon" style="background:linear-gradient(135deg,#fa709a,#fee140)"><i class="fas fa-question-circle"></i></div>
-    <h3>Quiz Game</h3>
-    <p>Test your knowledge with fun trivia</p>
-  </a>
-  <a href="notes.html" class="tool-card">
-    <div class="tool-icon" style="background:linear-gradient(135deg,#a18cd1,#fbc2eb)"><i class="fas fa-sticky-note"></i></div>
-    <h3>Quick Notes</h3>
-    <p>Jot down ideas that auto-save</p>
-  </a>
-  <a href="chatbot.html" class="tool-card">
-    <div class="tool-icon" style="background:linear-gradient(135deg,#30cfd0,#330867)"><i class="fas fa-robot"></i></div>
-    <h3>AI Chatbot</h3>
-    <p>Chat with Gemini AI assistant</p>
-  </a>
-</section>
-
-<footer><p>Built with ❤️ by OGuard &nbsp;|&nbsp; Powered by GitHub Pages</p></footer>
-
-<script type="module" src="firebase-config.js"></script>
-<script>
-function toggleTheme() {
-  document.body.classList.toggle('light');
-  var icon = document.querySelector('.theme-toggle i');
-  icon.classList.toggle('fa-moon');
-  icon.classList.toggle('fa-sun');
-  localStorage.setItem('theme', document.body.classList.contains('light') ? 'light' : 'dark');
-}
-if (localStorage.getItem('theme') === 'light') {
-  document.body.classList.add('light');
-  document.querySelector('.theme-toggle i').classList.replace('fa-moon', 'fa-sun');
-}
-</script>
-</body>
-</html>
+      <!-- Hero -->
+      <section class="hero" style="position:relative;overflow:hidden">
+            <div class="orb orb-1"></div>div>
+            <div class="orb orb-2"></div>div>
+            <div class="orb orb-3"></div>div>
+            <div class="hero-eyebrow"><i class="fas fa-bolt"></i>i> All-in-One Productivity Suite</div>div>
+            <h1>Your digital workspace,<br><span class="grad-text">reimagined.</span>span></h1>
+          <p class="hero-sub">Every tool you need — tasks, timers, budgets, notes, habits, and AI — in one beautifully crafted hub.</p>p>
+          <div class="hero-actions">
+                <a href="chatbot.html" class="hero-btn"><i class="fas fa-robot"></i>i> Try AI Assistant</a>a>
+                <a href="todo.html" class="hero-btn-outline"><i class="fas fa-check-square"></i>i> Get Started</a>a>
+          </div>div>
+      </section>section>
+  
+    <!-- Feature strip -->
+    <div class="feature-strip">
+        <div class="feature-item"><i class="fas fa-lock"></i>i> Private & Secure</div>div>
+        <div class="feature-item"><i class="fas fa-moon"></i>i> Dark & Light Mode</div>div>
+        <div class="feature-item"><i class="fas fa-cloud"></i>i> Auto-saves Locally</div>div>
+        <div class="feature-item"><i class="fas fa-robot"></i>i> AI-Powered</div>div>
+        <div class="feature-item"><i class="fas fa-mobile-alt"></i>i> Mobile Friendly</div>div>
+        <div class="feature-item"><i class="fas fa-bolt"></i>i> Lightning Fast</div>div>
+    </div>div>
+  
+    <!-- Tools -->
+    <div class="section">
+        <div class="section-header anim-fade-up">
+              <div class="section-label">Tools</div>div>
+              <h2 class="section-title">Everything you need, nothing you don't</h2>
+              <p class="section-sub">8 powerful tools built for real productivity</p>p>
+        </div>div>
+        <div class="tools-grid">
+              <a href="todo.html" class="tool-card">
+                      <div class="tool-icon" style="background:linear-gradient(135deg,#667eea,#764ba2)"><i class="fas fa-check-square"></i>i></div>div>
+                      <h3>To-Do List</h3>
+                      <p>Organize tasks with categories, priorities, and due dates</p>
+                      <i class="fas fa-arrow-up-right tool-arrow"></i>i>
+              </a>a>
+              <a href="timer.html" class="tool-card">
+                      <div class="tool-icon" style="background:linear-gradient(135deg,#f093fb,#f5576c)"><i class="fas fa-clock"></i>i></div>div>
+                      <h3>Pomodoro Timer</h3>
+                      <p>Stay focused with customizable work and break sessions</p>
+                      <i class="fas fa-arrow-up-right tool-arrow"></i>i>
+              </a>a>
+              <a href="budget.html" class="tool-card">
+                      <div class="tool-icon" style="background:linear-gradient(135deg,#43e97b,#38f9d7)"><i class="fas fa-wallet"></i>i></div>div>
+                      <h3>Budget Tracker</h3>
+                      <p>Track income and expenses with visual breakdowns</p>
+                      <i class="fas fa-arrow-up-right tool-arrow"></i>i>
+              </a>a>
+              <a href="notes.html" class="tool-card">
+                      <div class="tool-icon" style="background:linear-gradient(135deg,#a18cd1,#fbc2eb)"><i class="fas fa-sticky-note"></i>i></div>div>
+                      <h3>Quick Notes</h3>
+                      <p>Capture ideas instantly with rich auto-saving notes</p>
+                      <i class="fas fa-arrow-up-right tool-arrow"></i>i>
+              </a>a>
+              <a href="habits.html" class="tool-card tool-card-new">
+                      <div class="tool-icon" style="background:linear-gradient(135deg,#f7971e,#ffd200)"><i class="fas fa-fire"></i>i></div>div>
+                      <h3>Habit Tracker</h3>
+                      <p>Build streaks and track daily habits with visual progress</p>
+                      <i class="fas fa-arrow-up-right tool-arrow"></i>i>
+              </a>a>
+              <a href="converter.html" class="tool-card">
+                      <div class="tool-icon" style="background:linear-gradient(135deg,#4facfe,#00f2fe)"><i class="fas fa-exchange-alt"></i>i></div>div>
+                      <h3>Unit Converter</h3>
+                      <p>Convert length, weight, temperature, currency and more</p>
+                      <i class="fas fa-arrow-up-right tool-arrow"></i>i>
+              </a>a>
+              <a href="passwords.html" class="tool-card tool-card-new">
+                      <div class="tool-icon" style="background:linear-gradient(135deg,#ff6b6b,#feca57)"><i class="fas fa-key"></i>i></div>div>
+                      <h3>Password Generator</h3>
+                      <p>Generate strong, secure passwords with custom rules</p>
+                      <i class="fas fa-arrow-up-right tool-arrow"></i>i>
+              </a>a>
+              <a href="chatbot.html" class="tool-card">
+                      <div class="tool-icon" style="background:linear-gradient(135deg,#30cfd0,#330867)"><i class="fas fa-robot"></i>i></div>div>
+                      <h3>AI Assistant</h3>
+                      <p>Chat with Gemini AI — your intelligent productivity partner</p>
+                      <i class="fas fa-arrow-up-right tool-arrow"></i>i>
+              </a>a>
+        </div>div>
+    </div>div>
+  
+    <!-- Marquee -->
+    <div class="marquee-wrap">
+        <div class="marquee">
+              <span class="marquee-item"><i class="fas fa-check"></i>i> Task Management</span>span>
+              <span class="marquee-item"><i class="fas fa-clock"></i>i> Pomodoro Timer</span>span>
+              <span class="marquee-item"><i class="fas fa-wallet"></i>i> Budget Tracker</span>span>
+              <span class="marquee-item"><i class="fas fa-sticky-note"></i>i> Smart Notes</span>span>
+              <span class="marquee-item"><i class="fas fa-fire"></i>i> Habit Streaks</span>span>
+              <span class="marquee-item"><i class="fas fa-key"></i>i> Password Gen</span>span>
+              <span class="marquee-item"><i class="fas fa-robot"></i>i> AI Assistant</span>span>
+              <span class="marquee-item"><i class="fas fa-exchange-alt"></i>i> Unit Converter</span>span>
+              <span class="marquee-item"><i class="fas fa-check"></i>i> Task Management</span>span>
+              <span class="marquee-item"><i class="fas fa-clock"></i>i> Pomodoro Timer</span>span>
+              <span class="marquee-item"><i class="fas fa-wallet"></i>i> Budget Tracker</span>span>
+              <span class="marquee-item"><i class="fas fa-sticky-note"></i>i> Smart Notes</span>span>
+              <span class="marquee-item"><i class="fas fa-fire"></i>i> Habit Streaks</span>span>
+              <span class="marquee-item"><i class="fas fa-key"></i>i> Password Gen</span>span>
+              <span class="marquee-item"><i class="fas fa-robot"></i>i> AI Assistant</span>span>
+              <span class="marquee-item"><i class="fas fa-exchange-alt"></i>i> Unit Converter</span>span>
+        </div>div>
+    </div>div>
+  
+    <footer>
+          <p>Built with <span style="color:var(--red)">♥</span>span> by <strong>Omar Saleh</strong> &nbsp;·&nbsp; <a href="https://github.com/omarsalehm3" target="_blank">GitHub</a>a> &nbsp;·&nbsp; Powered by GitHub Pages</p>p>
+    </footer>
+  
+    <script type="module" src="firebase-config.js"></script>
+    <script>
+          function toggleTheme() {
+                  document.body.classList.toggle('light');
+                  var icon = document.querySelector('.theme-toggle i');
+                  icon.classList.toggle('fa-moon');
+                  icon.classList.toggle('fa-sun');
+                  localStorage.setItem('theme', document.body.classList.contains('light') ? 'light' : 'dark');
+          }
+          if (localStorage.getItem('theme') === 'light') {
+                  document.body.classList.add('light');
+                  document.querySelector('.theme-toggle i').classList.replace('fa-moon', 'fa-sun');
+          }
+            </script>
+  </body>
+</html>html>
+    </script></strong>
+    </footer></p></p></h3></h1>
+  </body>
+    </style></title>
+  </head>
