@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+  <html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>Habit Tracker | OGuard Hub</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+      .habit-card { background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin-bottom:12px;transition:var(--transition);animation:fadeUp 0.4s ease both; }
+    .habit-card:hover { border-color:rgba(79,142,247,0.3); }
+    .habit-top { display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px; }
+    .habit-info { display:flex;align-items:center;gap:12px;flex:1; }
+    .habit-emoji { width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0; }
+    .habit-name { font-weight:700;font-size:1rem; }
+    .habit-streak { font-size:0.78rem;color:var(--text2);margin-top:2px;display:flex;align-items:center;gap:4px; }
+    .streak-fire { color:#f7971e; }
+          .week-dots { display:flex;gap:6px; }
+    .dot { width:32px;height:32px;border-radius:8px;border:1.5px solid var(--border2);display:flex;align-items:center;justify-content:center;font-size:0.65rem;color:var(--text3);cursor:pointer;transition:var(--transition);flex-direction:column;gap:1px;flex-shrink:0; }
+    .dot.done { background:var(--grad);border-color:transparent;color:#fff; }
+        .dot.today { border-color:var(--blue); }
+    .dot-label { font-size:0.55rem;color:var(--text3); }
+    .dot.done .dot-label { color:rgba(255,255,255,0.7); }
+    .check-btn { width:40px;height:40px;border-radius:10px;border:none;cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center;transition:var(--transition);flex-shrink:0; }
+    .check-btn.unchecked { background:var(--bg3);color:var(--text3);border:1.5px solid var(--border2); }
+    .check-btn.checked { background:var(--grad);color:#fff; }
+        .check-btn:hover { transform:scale(1.1); }
+    .summary-grid { display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px; }
+    .summary-card { background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:20px;text-align:center;animation:fadeUp 0.4s ease both; }
+    .summary-card:nth-child(2){animation-delay:0.1s} .summary-card:nth-child(3){animation-delay:0.2s}
+    .summary-num { font-size:2rem;font-weight:800;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;display:block; }
+    .summary-label { font-size:0.78rem;color:var(--text2);margin-top:4px; }
+    .color-picker { display:flex;gap:8px;flex-wrap:wrap; }
+    .color-opt { width:28px;height:28px;border-radius:8px;cursor:pointer;border:2px solid transparent;transition:var(--transition); }
+    .color-opt.selected { border-color:#fff;transform:scale(1.15); }
+          .emoji-picker { display:flex;gap:8px;flex-wrap:wrap; }
+    .emoji-opt { width:36px;height:36px;border-radius:8px;border:1.5px solid var(--border2);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1.2rem;transition:var(--transition);background:var(--bg3); }
+    .emoji-opt.selected { border-color:var(--blue);background:rgba(79,142,247,0.1); }
+    @media(max-width:600px){ .week-dots{gap:4px} .dot{width:28px;height:28px} .summary-grid{grid-template-columns:repeat(3,1fr);gap:8px} }
+  </style>
+    </head>
+    <body>
+      <nav class="navbar">
+        <div class="nav-brand">
+          <div class="nav-brand-icon"><i class="fas fa-shield-alt"></i></div>
+          <a href="index.html" style="color:inherit;text-decoration:none;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent">OGuard Hub</a>
+        </div>
+        <div class="nav-links">
+          <a href="index.html"><i class="fas fa-home"></i> Home</a>
+          <a href="todo.html"><i class="fas fa-check-square"></i> To-Do</a>
+          <a href="timer.html"><i class="fas fa-clock"></i> Timer</a>
+          <a href="converter.html"><i class="fas fa-exchange-alt"></i> Converter</a>
+          <a href="budget.html"><i class="fas fa-wallet"></i> Budget</a>
+          <a href="notes.html"><i class="fas fa-sticky-note"></i> Notes</a>
+          <a href="habits.html" class="active"><i class="fas fa-fire"></i> Habits</a>
+          <a href="passwords.html"><i class="fas fa-key"></i> Passwords</a>
+          <a href="chatbot.html"><i class="fas fa-robot"></i> AI Chat</a>
+        </div>
+        <div class="nav-right">
+          <span id="navUser" style="display:none;font-size:0.82rem;color:var(--text2)"></span>
+          <button class="btn btn-secondary" style="padding:6px 14px;font-size:0.8rem" onclick="logoutUser()"><i class="fas fa-sign-out-alt"></i> Logout</button>
+          <button class="theme-toggle" onclick="toggleTheme()"><i class="fas fa-moon"></i></button>
+        </div>
+      </nav>
+
+      <div class="page-header">
+        <div class="page-header-inner">
+          <div class="page-icon" style="background:linear-gradient(135deg,#f7971e,#ffd200)"><i class="fas fa-fire"></i></div>
+          <div>
+            <h1>Habit Tracker</h1>
+            <p>Build streaks, stay consistent, transform your life</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="container">
+    <!-- Summary -->
+    <div class="summary-grid">
+      <div class="summary-card">
+        <span class="summary-num" id="totalHabits">0</span>
+        <div class="summary-label">Total Habits</div>
+          </div>
+          <div class="summary-card">
+            <span class="summary-num" id="completedToday">0</span>
+            <div class="summary-label">Done Today</div>
+          </div>
+          <div class="summary-card">
+            <span class="summary-num" id="bestStreak">0</span>
+            <div class="summary-label">Best Streak 🔥</div>
+          </div>
+        </div>
+
+        <!-- Add habit -->
+        <div class="card anim-fade-up">
+          <div class="card-title"><i class="fas fa-plus" style="color:var(--blue)"></i> Add New Habit</div>
+      <div class="flex flex-wrap gap-3" style="margin-bottom:14px">
+        <input type="text" id="habitName" placeholder="e.g. Morning run, Read 20 pages..." style="flex:1;min-width:200px">
+            <button class="btn btn-primary" onclick="addHabit()"><i class="fas fa-plus"></i> Add Habit</button>
+          </div>
+          <div style="margin-bottom:10px">
+            <div class="text-muted mb-1" style="font-size:0.78rem;font-weight:600;letter-spacing:0.5px;text-transform:uppercase">Pick an emoji</div>
+        <div class="emoji-picker" id="emojiPicker">
+          <div class="emoji-opt selected" data-emoji="🔥" onclick="selectEmoji(this)">🔥</div>
+              <div class="emoji-opt" data-emoji="💪" onclick="selectEmoji(this)">💪</div>
+              <div class="emoji-opt" data-emoji="📚" onclick="selectEmoji(this)">📚</div>
+              <div class="emoji-opt" data-emoji="🏃" onclick="selectEmoji(this)">🏃</div>
+              <div class="emoji-opt" data-emoji="💧" onclick="selectEmoji(this)">💧</div>
+              <div class="emoji-opt" data-emoji="🧘" onclick="selectEmoji(this)">🧘</div>
+              <div class="emoji-opt" data-emoji="🥗" onclick="selectEmoji(this)">🥗</div>
+              <div class="emoji-opt" data-emoji="😴" onclick="selectEmoji(this)">😴</div>
+              <div class="emoji-opt" data-emoji="✍️" onclick="selectEmoji(this)">✍️</div>
+              <div class="emoji-opt" data-emoji="🎯" onclick="selectEmoji(this)">🎯</div>
+              <div class="emoji-opt" data-emoji="🌅" onclick="selectEmoji(this)">🌅</div>
+              <div class="emoji-opt" data-emoji="🎵" onclick="selectEmoji(this)">🎵</div>
+            </div>
+          </div>
+          <div>
+            <div class="text-muted mb-1" style="font-size:0.78rem;font-weight:600;letter-spacing:0.5px;text-transform:uppercase">Color</div>
+            <div class="color-picker" id="colorPicker">
+              <div class="color-opt selected" data-color="linear-gradient(135deg,#f7971e,#ffd200)" style="background:linear-gradient(135deg,#f7971e,#ffd200)" onclick="selectColor(this)"></div>
+              <div class="color-opt" data-color="linear-gradient(135deg,#4f8ef7,#a371f7)" style="background:linear-gradient(135deg,#4f8ef7,#a371f7)" onclick="selectColor(this)"></div>
+              <div class="color-opt" data-color="linear-gradient(135deg,#43e97b,#38f9d7)" style="background:linear-gradient(135deg,#43e97b,#38f9d7)" onclick="selectColor(this)"></div>
+              <div class="color-opt" data-color="linear-gradient(135deg,#f093fb,#f5576c)" style="background:linear-gradient(135deg,#f093fb,#f5576c)" onclick="selectColor(this)"></div>
+              <div class="color-opt" data-color="linear-gradient(135deg,#30cfd0,#330867)" style="background:linear-gradient(135deg,#30cfd0,#330867)" onclick="selectColor(this)"></div>
+              <div class="color-opt" data-color="linear-gradient(135deg,#ff6b6b,#feca57)" style="background:linear-gradient(135deg,#ff6b6b,#feca57)" onclick="selectColor(this)"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Today's habits -->
+        <div id="habitList"></div>
+      </div>
+
+      <script type="module" src="firebase-config.js"></script>
+      <script>
+        var habits = JSON.parse(localStorage.getItem('habits_v2') || '[]');
+    var selectedEmoji = '🔥';
+    var selectedColor = 'linear-gradient(135deg,#f7971e,#ffd200)';
+    var today = new Date().toDateString();
+    var days = ['Su','Mo','Tu','We','Th','Fr','Sa'];
+
+    function selectEmoji(el) {
+            document.querySelectorAll('.emoji-opt').forEach(e => e.classList.remove('selected'));
+      el.classList.add('selected');
+      selectedEmoji = el.dataset.emoji;
+    }
+    function selectColor(el) {
+            document.querySelectorAll('.color-opt').forEach(e => e.classList.remove('selected'));
+      el.classList.add('selected');
+      selectedColor = el.dataset.color;
+    }
+
+    function getLast7Days() {
+            var arr = [];
+      for (var i = 6; i >= 0; i--) {
+        var d = new Date(); d.setDate(d.getDate() - i);
+        arr.push(d.toDateString());
+      }
+      return arr;
+    }
+
+    function getStreak(habit) {
+            var streak = 0;
+      var d = new Date();
+      while (true) {
+        var ds = d.toDateString();
+        if (habit.completions && habit.completions[ds]) {
+          streak++;
+          d.setDate(d.getDate() - 1);
+        } else { break; }
+      }
+      return streak;
+    }
+
+    function addHabit() {
+            var name = document.getElementById('habitName').value.trim();
+      if (!name) return;
+      habits.push({ id: Date.now(), name: name, emoji: selectedEmoji, color: selectedColor, completions: {}, createdAt: today });
+      document.getElementById('habitName').value = '';
+              saveAndRender();
+      showToast('Habit added! Keep it up 🔥', 'success');
+    }
+
+    function toggleHabit(id) {
+            var h = habits.find(h => h.id === id);
+      if (!h) return;
+      if (!h.completions) h.completions = {};
+      if (h.completions[today]) {
+        delete h.completions[today];
+      } else {
+        h.completions[today] = true;
+        showToast('Great job! Habit completed! 🎉', 'success');
+      }
+      saveAndRender();
+    }
+
+    function toggleDay(id, day) {
+            var h = habits.find(h => h.id === id);
+      if (!h) return;
+      if (!h.completions) h.completions = {};
+      if (h.completions[day]) { delete h.completions[day]; }
+      else { h.completions[day] = true; }
+      saveAndRender();
+    }
+
+    function deleteHabit(id) {
+            if (!confirm('Delete this habit?')) return;
+      habits = habits.filter(h => h.id !== id);
+      saveAndRender();
+    }
+
+    function saveAndRender() {
+            localStorage.setItem('habits_v2', JSON.stringify(habits));
+      renderHabits();
+    }
+
+    function renderHabits() {
+            var list = document.getElementById('habitList');
+      var last7 = getLast7Days();
+      var todayDone = habits.filter(h => h.completions && h.completions[today]).length;
+      var bestStreak = habits.reduce((m, h) => Math.max(m, getStreak(h)), 0);
+      document.getElementById('totalHabits').textContent = habits.length;
+      document.getElementById('completedToday').textContent = todayDone;
+      document.getElementById('bestStreak').textContent = bestStreak;
+
+      if (habits.length === 0) {
+        list.innerHTML = '<div class="empty-state"><i class="fas fa-fire"></i><p>No habits yet. Add your first habit above to start building streaks!</p></div>';
+        return;
+      }
+
+      list.innerHTML = habits.map(function(h, idx) {
+                var streak = getStreak(h);
+        var todayDone2 = h.completions && h.completions[today];
+        var dots = last7.map(function(day, i) {
+          var done = h.completions && h.completions[day];
+          var isToday = day === today;
+          var d = new Date(day);
+          return '<div class="dot' + (done ? ' done' : '') + (isToday ? ' today' : '') + '" onclick="toggleDay(' + h.id + ',\'' + day + '\')" title="' + day + '">' +
+                        '<span>' + (done ? '✓' : '') + '</span>' +
+                        '<span class="dot-label">' + days[d.getDay()] + '</span>' +
+                        '</div>';
+            }).join('');
+
+        return '<div class="habit-card" style="animation-delay:' + (idx * 0.05) + 's">' +
+                    '<div class="habit-top">' +
+                      '<div class="habit-info">' +
+                        '<div class="habit-emoji" style="background:' + h.color + '">' + h.emoji + '</div>' +
+                        '<div>' +
+                          '<div class="habit-name">' + h.name + '</div>' +
+                          '<div class="habit-streak"><span class="streak-fire">🔥</span> ' + streak + ' day streak</div>' +
+                        '</div>' +
+                      '</div>' +
+                      '<div style="display:flex;gap:8px;align-items:center">' +
+                        '<button class="check-btn ' + (todayDone2 ? 'checked' : 'unchecked') + '" onclick="toggleHabit(' + h.id + ')" title="Mark today">' +
+                          '<i class="fas ' + (todayDone2 ? 'fa-check' : 'fa-plus') + '"></i>' +
+                        '</button>' +
+                        '<button class="btn btn-ghost btn-icon" onclick="deleteHabit(' + h.id + ')" title="Delete"><i class="fas fa-trash" style="font-size:0.8rem;color:var(--red)"></i></button>' +
+                      '</div>' +
+                    '</div>' +
+                    '<div class="week-dots">' + dots + '</div>' +
+                  '</div>';
+        }).join('');
+      }
+
+    function showToast(msg, type) {
+            var t = document.createElement('div');
+      t.className = 'toast toast-' + (type || 'info');
+      t.innerHTML = '<i class="fas fa-' + (type === 'success' ? 'check-circle' : 'info-circle') + '"></i> ' + msg;
+      document.body.appendChild(t);
+      setTimeout(() => t.remove(), 3000);
+    }
+
+    document.getElementById('habitName').addEventListener('keypress', e => { if (e.key === 'Enter') addHabit(); });
+    renderHabits();
+
+    function toggleTheme() {
+            document.body.classList.toggle('light');
+      var icon = document.querySelector('.theme-toggle i');
+      icon.classList.toggle('fa-moon'); icon.classList.toggle('fa-sun');
+      localStorage.setItem('theme', document.body.classList.contains('light') ? 'light' : 'dark');
+    }
+    if (localStorage.getItem('theme') === 'light') {
+      document.body.classList.add('light');
+      document.querySelector('.theme-toggle i').classList.replace('fa-moon', 'fa-sun');
+    }
+  </script>
+      </body>
+      </html>
