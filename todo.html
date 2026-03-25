@@ -10,29 +10,36 @@
 </head>
 <body>
 <nav class="navbar">
-  <div class="nav-brand"><a href="index.html" style="color:inherit;text-decoration:none"><i class="fas fa-shield-alt"></i> OGuard Hub</a></div>
+  <div class="nav-brand">
+    <div class="nav-brand-icon"><i class="fas fa-shield-alt"></i></div>
+    <a href="index.html" style="color:inherit;text-decoration:none;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent">OGuard Hub</a>
+  </div>
   <div class="nav-links">
     <a href="index.html"><i class="fas fa-home"></i> Home</a>
-    <a href="todo.html"><i class="fas fa-check-square"></i> To-Do</a>
+    <a href="todo.html" class="active"><i class="fas fa-check-square"></i> To-Do</a>
     <a href="timer.html"><i class="fas fa-clock"></i> Timer</a>
     <a href="converter.html"><i class="fas fa-exchange-alt"></i> Converter</a>
     <a href="budget.html"><i class="fas fa-wallet"></i> Budget</a>
-    <a href="quiz.html"><i class="fas fa-question-circle"></i> Quiz</a>
     <a href="notes.html"><i class="fas fa-sticky-note"></i> Notes</a>
+    <a href="habits.html"><i class="fas fa-fire"></i> Habits</a>
+    <a href="passwords.html"><i class="fas fa-key"></i> Passwords</a>
     <a href="chatbot.html"><i class="fas fa-robot"></i> AI Chat</a>
   </div>
-  <div class="flex" style="gap:8px;align-items:center">
-    <span id="navUser" style="display:none;font-size:0.85rem;color:#8b949e"></span>
+  <div class="nav-right">
+    <span id="navUser" style="display:none;font-size:0.82rem;color:var(--text2)"></span>
     <button class="btn btn-secondary" style="padding:6px 14px;font-size:0.8rem" onclick="logoutUser()"><i class="fas fa-sign-out-alt"></i> Logout</button>
     <button class="theme-toggle" onclick="toggleTheme()"><i class="fas fa-moon"></i></button>
   </div>
 </nav>
-
 <div class="page-header">
-  <h1><i class="fas fa-check-square"></i> To-Do List</h1>
-  <p>Manage your tasks with categories and priorities</p>
+  <div class="page-header-inner">
+    <div class="page-icon"><i class="fas fa-check-square"></i></div>
+    <div>
+      <h1>To-Do List</h1>
+      <p>Manage your tasks with categories and priorities</p>
+    </div>
+  </div>
 </div>
-
 <div class="container">
   <div class="card">
     <div class="flex flex-wrap" style="gap:10px;margin-bottom:15px">
@@ -61,60 +68,35 @@
   </div>
   <div class="card" id="statsCard">
     <div class="flex" style="gap:20px;flex-wrap:wrap">
-      <div><span id="totalCount">0</span> <span class="text-muted">Total</span></div>
-      <div><span id="doneCount">0</span> <span class="text-muted">Done</span></div>
-      <div><span id="pendingCount">0</span> <span class="text-muted">Pending</span></div>
+      <div><span id="totalCount" style="font-size:1.4rem;font-weight:700;color:var(--blue)">0</span> <span class="text-muted">Total</span></div>
+      <div><span id="doneCount" style="font-size:1.4rem;font-weight:700;color:#3fb950">0</span> <span class="text-muted">Done</span></div>
+      <div><span id="pendingCount" style="font-size:1.4rem;font-weight:700;color:#f0883e">0</span> <span class="text-muted">Pending</span></div>
     </div>
   </div>
   <div id="taskList"></div>
 </div>
-
 <script type="module" src="firebase-config.js"></script>
 <script>
 var tasks = JSON.parse(localStorage.getItem('tasks') || '[]');
 var currentFilter = 'all';
-
 function addTask() {
   var text = document.getElementById('taskInput').value.trim();
   if (!text) return;
-  tasks.push({
-    id: Date.now(),
-    text: text,
-    category: document.getElementById('categorySelect').value,
-    priority: document.getElementById('prioritySelect').value,
-    done: false,
-    date: new Date().toLocaleDateString()
-  });
+  tasks.push({ id: Date.now(), text: text, category: document.getElementById('categorySelect').value, priority: document.getElementById('prioritySelect').value, done: false, date: new Date().toLocaleDateString() });
   document.getElementById('taskInput').value = '';
   saveTasks();
 }
-
 function toggleDone(id) {
-  for (var i = 0; i < tasks.length; i++) {
-    if (tasks[i].id === id) { tasks[i].done = !tasks[i].done; break; }
-  }
+  for (var i = 0; i < tasks.length; i++) { if (tasks[i].id === id) { tasks[i].done = !tasks[i].done; break; } }
   saveTasks();
 }
-
 function deleteTask(id) {
   tasks = tasks.filter(function(t) { return t.id !== id; });
   saveTasks();
 }
-
-function filterTasks(cat) {
-  currentFilter = cat;
-  renderTasks();
-}
-
-function saveTasks() {
-  localStorage.setItem('tasks', JSON.stringify(tasks));
-  renderTasks();
-}
-
-function escapeHtml(str) {
-  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
-
+function filterTasks(cat) { currentFilter = cat; renderTasks(); }
+function saveTasks() { localStorage.setItem('tasks', JSON.stringify(tasks)); renderTasks(); }
+function escapeHtml(str) { return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 function renderTasks() {
   var list = document.getElementById('taskList');
   var filtered = currentFilter === 'all' ? tasks : tasks.filter(function(t) { return t.category === currentFilter; });
@@ -129,12 +111,12 @@ function renderTasks() {
       var checked = t.done ? 'checked' : '';
       var textDecor = t.done ? 'line-through' : 'none';
       var color = pc[t.priority] || '#8b949e';
-      html += '<div class="card flex" style="justify-content:space-between;gap:10px;opacity:' + opacity + '">';
+      html += '<div class="card flex" style="justify-content:space-between;gap:10px;opacity:' + opacity + ';animation:fadeIn 0.3s ease">';
       html += '<div style="display:flex;align-items:center;gap:12px;flex:1">';
-      html += '<input type="checkbox" ' + checked + ' onchange="toggleDone(' + t.id + ')" style="width:18px;height:18px;cursor:pointer;accent-color:#58a6ff">';
+      html += '<input type="checkbox" ' + checked + ' onchange="toggleDone(' + t.id + ')" style="width:18px;height:18px;cursor:pointer;accent-color:var(--blue)">';
       html += '<div>';
       html += '<div style="text-decoration:' + textDecor + ';font-weight:500">' + escapeHtml(t.text) + '</div>';
-      html += '<div style="font-size:0.75rem;color:#8b949e;margin-top:4px">' + escapeHtml(t.category) + ' &middot; <span style="color:' + color + '">' + escapeHtml(t.priority) + ' priority</span> &middot; ' + escapeHtml(t.date) + '</div>';
+      html += '<div style="font-size:0.75rem;color:var(--text2);margin-top:4px">' + escapeHtml(t.category) + ' &middot; <span style="color:' + color + '">' + escapeHtml(t.priority) + ' priority</span> &middot; ' + escapeHtml(t.date) + '</div>';
       html += '</div></div>';
       html += '<button class="btn btn-danger" style="padding:6px 12px;font-size:0.8rem" onclick="deleteTask(' + t.id + ')"><i class="fas fa-trash"></i></button>';
       html += '</div>';
@@ -145,18 +127,12 @@ function renderTasks() {
   document.getElementById('doneCount').textContent = tasks.filter(function(t) { return t.done; }).length;
   document.getElementById('pendingCount').textContent = tasks.filter(function(t) { return !t.done; }).length;
 }
-
-document.getElementById('taskInput').addEventListener('keypress', function(e) {
-  if (e.key === 'Enter') addTask();
-});
-
+document.getElementById('taskInput').addEventListener('keypress', function(e) { if (e.key === 'Enter') addTask(); });
 renderTasks();
-
 function toggleTheme() {
   document.body.classList.toggle('light');
   var icon = document.querySelector('.theme-toggle i');
-  icon.classList.toggle('fa-moon');
-  icon.classList.toggle('fa-sun');
+  icon.classList.toggle('fa-moon'); icon.classList.toggle('fa-sun');
   localStorage.setItem('theme', document.body.classList.contains('light') ? 'light' : 'dark');
 }
 if (localStorage.getItem('theme') === 'light') {
