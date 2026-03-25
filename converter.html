@@ -10,29 +10,36 @@
 </head>
 <body>
 <nav class="navbar">
-  <div class="nav-brand"><a href="index.html" style="color:inherit;text-decoration:none"><i class="fas fa-shield-alt"></i> OGuard Hub</a></div>
+  <div class="nav-brand">
+    <div class="nav-brand-icon"><i class="fas fa-shield-alt"></i></div>
+    <a href="index.html" style="color:inherit;text-decoration:none;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent">OGuard Hub</a>
+  </div>
   <div class="nav-links">
     <a href="index.html"><i class="fas fa-home"></i> Home</a>
     <a href="todo.html"><i class="fas fa-check-square"></i> To-Do</a>
     <a href="timer.html"><i class="fas fa-clock"></i> Timer</a>
-    <a href="converter.html"><i class="fas fa-exchange-alt"></i> Converter</a>
+    <a href="converter.html" class="active"><i class="fas fa-exchange-alt"></i> Converter</a>
     <a href="budget.html"><i class="fas fa-wallet"></i> Budget</a>
-    <a href="quiz.html"><i class="fas fa-question-circle"></i> Quiz</a>
     <a href="notes.html"><i class="fas fa-sticky-note"></i> Notes</a>
+    <a href="habits.html"><i class="fas fa-fire"></i> Habits</a>
+    <a href="passwords.html"><i class="fas fa-key"></i> Passwords</a>
     <a href="chatbot.html"><i class="fas fa-robot"></i> AI Chat</a>
   </div>
-  <div class="flex" style="gap:8px;align-items:center">
-    <span id="navUser" style="display:none;font-size:0.85rem;color:#8b949e"></span>
+  <div class="nav-right">
+    <span id="navUser" style="display:none;font-size:0.82rem;color:var(--text2)"></span>
     <button class="btn btn-secondary" style="padding:6px 14px;font-size:0.8rem" onclick="logoutUser()"><i class="fas fa-sign-out-alt"></i> Logout</button>
     <button class="theme-toggle" onclick="toggleTheme()"><i class="fas fa-moon"></i></button>
   </div>
 </nav>
-
 <div class="page-header">
-  <h1><i class="fas fa-exchange-alt"></i> Unit Converter</h1>
-  <p>Convert between common units instantly</p>
+  <div class="page-header-inner">
+    <div class="page-icon"><i class="fas fa-exchange-alt"></i></div>
+    <div>
+      <h1>Unit Converter</h1>
+      <p>Convert between common units instantly</p>
+    </div>
+  </div>
 </div>
-
 <div class="container">
   <div class="card">
     <div class="flex flex-wrap mt-1" style="gap:10px;margin-bottom:15px">
@@ -49,119 +56,69 @@
     <div id="converterContent"></div>
   </div>
 </div>
-
 <script type="module" src="firebase-config.js"></script>
 <script>
 var convData = {
   length: {units: ['Meter','Kilometer','Mile','Foot','Inch','Centimeter','Yard'], toBase: [1,1000,1609.344,0.3048,0.0254,0.01,0.9144]},
   weight: {units: ['Kilogram','Gram','Pound','Ounce','Ton'], toBase: [1,0.001,0.453592,0.0283495,1000]},
-  speed:  {units: ['m/s','km/h','mph','knot'], toBase: [1,0.277778,0.44704,0.514444]},
-  area:   {units: ['m²','km²','Hectare','Acre','ft²'], toBase: [1,1e6,10000,4046.86,0.092903]},
+  speed: {units: ['m/s','km/h','mph','knot'], toBase: [1,0.277778,0.44704,0.514444]},
+  area: {units: ['m²','km²','Hectare','Acre','ft²'], toBase: [1,1e6,10000,4046.86,0.092903]},
   volume: {units: ['Liter','Milliliter','Gallon','Cup','Fluid Oz'], toBase: [1,0.001,3.78541,0.236588,0.0295735]},
-  data:   {units: ['Byte','KB','MB','GB','TB'], toBase: [1,1024,1048576,1073741824,1099511627776]}
+  data: {units: ['Byte','KB','MB','GB','TB'], toBase: [1,1024,1048576,1073741824,1099511627776]}
 };
-
 function buildResultCard(label, value) {
   var card = document.createElement('div');
-  card.style.cssText = 'background:rgba(88,166,255,0.08);border:1px solid #30363d;border-radius:10px;padding:12px';
+  card.style.cssText = 'background:rgba(88,166,255,0.08);border:1px solid var(--border);border-radius:10px;padding:14px;transition:transform 0.2s';
+  card.onmouseenter = function(){ this.style.transform = 'translateY(-2px)'; };
+  card.onmouseleave = function(){ this.style.transform = 'translateY(0)'; };
   var lbl = document.createElement('div');
   lbl.className = 'text-muted';
   lbl.style.fontSize = '0.75rem';
   lbl.textContent = label;
   var val = document.createElement('div');
-  val.style.cssText = 'font-size:1.2rem;font-weight:600;color:#58a6ff;margin-top:4px';
+  val.style.cssText = 'font-size:1.2rem;font-weight:600;color:var(--blue);margin-top:4px';
   val.textContent = value;
   card.appendChild(lbl);
   card.appendChild(val);
   return card;
 }
-
 function renderConverter() {
   var t = document.getElementById('convType').value;
   var div = document.getElementById('converterContent');
   div.innerHTML = '';
-
   var topRow = document.createElement('div');
   topRow.className = 'flex flex-wrap';
   topRow.style.cssText = 'gap:15px;align-items:flex-end';
-
   if (t === 'temp') {
-    var valBox = document.createElement('div');
-    valBox.style.flex = '1';
+    var valBox = document.createElement('div'); valBox.style.flex = '1';
     valBox.innerHTML = '<label class="text-muted">Value</label>';
-    var valInput = document.createElement('input');
-    valInput.type = 'number';
-    valInput.id = 'tempVal';
-    valInput.value = '0';
-    valInput.style.marginTop = '6px';
-    valInput.addEventListener('input', convertTemp);
-    valBox.appendChild(valInput);
-
-    var fromBox = document.createElement('div');
-    fromBox.style.flex = '1';
+    var valInput = document.createElement('input'); valInput.type = 'number'; valInput.id = 'tempVal'; valInput.value = '0'; valInput.style.marginTop = '6px';
+    valInput.addEventListener('input', convertTemp); valBox.appendChild(valInput);
+    var fromBox = document.createElement('div'); fromBox.style.flex = '1';
     fromBox.innerHTML = '<label class="text-muted">From</label>';
-    var fromSel = document.createElement('select');
-    fromSel.id = 'tempFrom';
-    fromSel.style.marginTop = '6px';
-    ['Celsius','Fahrenheit','Kelvin'].forEach(function(u) {
-      var opt = document.createElement('option');
-      opt.textContent = u;
-      fromSel.appendChild(opt);
-    });
-    fromSel.addEventListener('change', convertTemp);
-    fromBox.appendChild(fromSel);
-
-    topRow.appendChild(valBox);
-    topRow.appendChild(fromBox);
-    div.appendChild(topRow);
-
-    var results = document.createElement('div');
-    results.id = 'tempResults';
-    results.className = 'mt-2';
+    var fromSel = document.createElement('select'); fromSel.id = 'tempFrom'; fromSel.style.marginTop = '6px';
+    ['Celsius','Fahrenheit','Kelvin'].forEach(function(u) { var opt = document.createElement('option'); opt.textContent = u; fromSel.appendChild(opt); });
+    fromSel.addEventListener('change', convertTemp); fromBox.appendChild(fromSel);
+    topRow.appendChild(valBox); topRow.appendChild(fromBox); div.appendChild(topRow);
+    var results = document.createElement('div'); results.id = 'tempResults'; results.className = 'mt-2';
     results.style.cssText = 'display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px';
-    div.appendChild(results);
-    convertTemp();
-    return;
+    div.appendChild(results); convertTemp(); return;
   }
-
   var d = convData[t];
-  var valBox2 = document.createElement('div');
-  valBox2.style.flex = '1';
+  var valBox2 = document.createElement('div'); valBox2.style.flex = '1';
   valBox2.innerHTML = '<label class="text-muted">Value</label>';
-  var valInput2 = document.createElement('input');
-  valInput2.type = 'number';
-  valInput2.id = 'convVal';
-  valInput2.value = '1';
-  valInput2.style.marginTop = '6px';
-  valInput2.addEventListener('input', convertUnit);
-  valBox2.appendChild(valInput2);
-
-  var fromBox2 = document.createElement('div');
-  fromBox2.style.flex = '1';
+  var valInput2 = document.createElement('input'); valInput2.type = 'number'; valInput2.id = 'convVal'; valInput2.value = '1'; valInput2.style.marginTop = '6px';
+  valInput2.addEventListener('input', convertUnit); valBox2.appendChild(valInput2);
+  var fromBox2 = document.createElement('div'); fromBox2.style.flex = '1';
   fromBox2.innerHTML = '<label class="text-muted">From</label>';
-  var fromSel2 = document.createElement('select');
-  fromSel2.id = 'convFrom';
-  fromSel2.style.marginTop = '6px';
-  d.units.forEach(function(u) {
-    var opt = document.createElement('option');
-    opt.textContent = u;
-    fromSel2.appendChild(opt);
-  });
-  fromSel2.addEventListener('change', convertUnit);
-  fromBox2.appendChild(fromSel2);
-
-  topRow.appendChild(valBox2);
-  topRow.appendChild(fromBox2);
-  div.appendChild(topRow);
-
-  var results2 = document.createElement('div');
-  results2.id = 'convResults';
-  results2.className = 'mt-2';
+  var fromSel2 = document.createElement('select'); fromSel2.id = 'convFrom'; fromSel2.style.marginTop = '6px';
+  d.units.forEach(function(u) { var opt = document.createElement('option'); opt.textContent = u; fromSel2.appendChild(opt); });
+  fromSel2.addEventListener('change', convertUnit); fromBox2.appendChild(fromSel2);
+  topRow.appendChild(valBox2); topRow.appendChild(fromBox2); div.appendChild(topRow);
+  var results2 = document.createElement('div'); results2.id = 'convResults'; results2.className = 'mt-2';
   results2.style.cssText = 'display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px';
-  div.appendChild(results2);
-  convertUnit();
+  div.appendChild(results2); convertUnit();
 }
-
 function convertUnit() {
   var t = document.getElementById('convType').value;
   var d = convData[t];
@@ -172,11 +129,9 @@ function convertUnit() {
   res.innerHTML = '';
   for (var i = 0; i < d.units.length; i++) {
     var result = base / d.toBase[i];
-    var formatted = result.toLocaleString(undefined, {maximumFractionDigits: 6});
-    res.appendChild(buildResultCard(d.units[i], formatted));
+    res.appendChild(buildResultCard(d.units[i], result.toLocaleString(undefined, {maximumFractionDigits: 6})));
   }
 }
-
 function convertTemp() {
   var val = parseFloat(document.getElementById('tempVal').value) || 0;
   var from = document.getElementById('tempFrom').value;
@@ -187,23 +142,18 @@ function convertTemp() {
   var results = [['Celsius', c], ['Fahrenheit', c * 9/5 + 32], ['Kelvin', c + 273.15]];
   var resDiv = document.getElementById('tempResults');
   resDiv.innerHTML = '';
-  for (var i = 0; i < results.length; i++) {
-    resDiv.appendChild(buildResultCard(results[i][0], results[i][1].toFixed(4)));
-  }
+  for (var i = 0; i < results.length; i++) { resDiv.appendChild(buildResultCard(results[i][0], results[i][1].toFixed(4))); }
 }
-
 function toggleTheme() {
   document.body.classList.toggle('light');
   var icon = document.querySelector('.theme-toggle i');
-  icon.classList.toggle('fa-moon');
-  icon.classList.toggle('fa-sun');
+  icon.classList.toggle('fa-moon'); icon.classList.toggle('fa-sun');
   localStorage.setItem('theme', document.body.classList.contains('light') ? 'light' : 'dark');
 }
 if (localStorage.getItem('theme') === 'light') {
   document.body.classList.add('light');
   document.querySelector('.theme-toggle i').classList.replace('fa-moon', 'fa-sun');
 }
-
 renderConverter();
 </script>
 </body>
