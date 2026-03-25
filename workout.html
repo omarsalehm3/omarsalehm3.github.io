@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Workout Tracker | OGuard Hub</title>
+<link rel="stylesheet" href="style.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+.workout-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px}
+.exercise-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px;animation:fadeIn 0.3s ease}
+.exercise-card .ex-name{font-weight:600;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.set-row{display:flex;gap:8px;align-items:center;margin-bottom:6px}
+.set-row input{width:70px;text-align:center;padding:6px 8px}
+.set-row .set-label{font-size:0.8rem;color:var(--text2);width:40px}
+.set-row .set-done{width:28px;height:28px;border-radius:50%;border:2px solid var(--border);background:none;cursor:pointer;transition:all 0.2s;font-size:0.8rem;display:flex;align-items:center;justify-content:center}
+.set-row .set-done.done{background:#3fb950;border-color:#3fb950;color:#fff}
+.timer-ring{width:120px;height:120px;border-radius:50%;border:6px solid var(--border);display:flex;align-items:center;justify-content:center;margin:10px auto;font-size:1.8rem;font-weight:700;color:var(--blue);border-top-color:var(--blue);transition:all 0.3s}
+.muscle-tag{display:inline-block;background:rgba(88,166,255,0.12);color:var(--blue);border-radius:20px;padding:2px 10px;font-size:0.72rem;margin:2px}
+.workout-summary{display:flex;gap:16px;flex-wrap:wrap}
+.summary-stat{flex:1;min-width:100px;text-align:center;background:rgba(88,166,255,0.08);border:1px solid var(--border);border-radius:10px;padding:12px}
+.summary-val{font-size:1.5rem;font-weight:700;color:var(--blue)}
+.summary-lbl{font-size:0.75rem;color:var(--text2);margin-top:2px}
+</style>
+</head>
+<body>
+<nav class="navbar">
+  <div class="nav-brand">
+    <div class="nav-brand-icon"><i class="fas fa-shield-alt"></i></div>
+    <a href="index.html" style="color:inherit;text-decoration:none;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent">OGuard Hub</a>
+  </div>
+  <div class="nav-links">
+    <a href="index.html"><i class="fas fa-home"></i> Home</a>
+    <div class="nav-dropdown">
+      <button class="nav-dropdown-btn"><i class="fas fa-th-large"></i> Tools <i class="fas fa-chevron-down" style="font-size:0.7rem;margin-left:2px"></i></button>
+      <div class="nav-dropdown-menu">
+        <a href="todo.html"><i class="fas fa-check-square"></i> To-Do List</a>
+        <a href="timer.html"><i class="fas fa-clock"></i> Pomodoro Timer</a>
+        <a href="budget.html"><i class="fas fa-wallet"></i> Budget</a>
+        <a href="notes.html"><i class="fas fa-sticky-note"></i> Notes</a>
+        <a href="habits.html"><i class="fas fa-fire"></i> Habits</a>
+        <a href="converter.html"><i class="fas fa-exchange-alt"></i> Converter</a>
+        <a href="passwords.html"><i class="fas fa-key"></i> Passwords</a>
+        <a href="calculator.html"><i class="fas fa-calculator"></i> Calculator</a>
+        <a href="flashcards.html"><i class="fas fa-layer-group"></i> Flashcards</a>
+        <a href="weather.html"><i class="fas fa-cloud-sun"></i> Weather</a>
+        <a href="workout.html" class="active"><i class="fas fa-dumbbell"></i> Workout</a>
+      </div>
+    </div>
+    <a href="chatbot.html"><i class="fas fa-robot"></i> AI Chat</a>
+  </div>
+  <div class="nav-right">
+    <span id="navUser" style="display:none;font-size:0.82rem;color:var(--text2)"></span>
+    <button class="btn btn-secondary" style="padding:6px 14px;font-size:0.8rem" onclick="logoutUser()"><i class="fas fa-sign-out-alt"></i> Logout</button>
+    <button class="theme-toggle" onclick="toggleTheme()"><i class="fas fa-moon"></i></button>
+  </div>
+</nav>
+<div class="page-header">
+  <div class="page-header-inner">
+    <div class="page-icon"><i class="fas fa-dumbbell"></i></div>
+    <div><h1>Workout Tracker</h1><p>Log exercises, sets, and rest timers</p></div>
+  </div>
+</div>
+<div class="container">
+  <div class="card" style="margin-bottom:16px">
+    <div class="flex flex-wrap" style="gap:10px;align-items:flex-end">
+      <div style="flex:2;min-width:160px">
+        <label class="text-muted" style="font-size:0.8rem">Exercise Name</label>
+        <input type="text" id="exName" placeholder="e.g. Bench Press" style="margin-top:4px">
+      </div>
+      <div style="flex:1;min-width:100px">
+        <label class="text-muted" style="font-size:0.8rem">Muscle Group</label>
+        <select id="exMuscle" style="margin-top:4px">
+          <option>Chest</option><option>Back</option><option>Shoulders</option>
+          <option>Biceps</option><option>Triceps</option><option>Legs</option>
+          <option>Core</option><option>Cardio</option><option>Full Body</option>
+        </select>
+      </div>
+      <div style="flex:1;min-width:80px">
+        <label class="text-muted" style="font-size:0.8rem">Sets</label>
+        <input type="number" id="exSets" value="3" min="1" max="10" style="margin-top:4px">
+      </div>
+      <button class="btn btn-primary" onclick="addExercise()"><i class="fas fa-plus"></i> Add</button>
+    </div>
+  </div>
+  <div class="card" style="margin-bottom:16px">
+    <h3 style="margin-bottom:12px">Summary</h3>
+    <div class="workout-summary">
+      <div class="summary-stat"><div class="summary-val" id="totalEx">0</div><div class="summary-lbl">Exercises</div></div>
+      <div class="summary-stat"><div class="summary-val" id="totalSets">0</div><div class="summary-lbl">Total Sets</div></div>
+      <div class="summary-stat"><div class="summary-val" id="doneSets">0</div><div class="summary-lbl">Done</div></div>
+      <div class="summary-stat"><div class="summary-val" id="totalVol">0</div><div class="summary-lbl">Volume (kg)</div></div>
+    </div>
+    <div style="margin-top:14px;display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+      <div>
+        <label class="text-muted" style="font-size:0.8rem">Rest Timer</label>
+        <div style="display:flex;gap:6px;margin-top:4px">
+          <button class="btn btn-secondary" style="padding:5px 10px;font-size:0.8rem" onclick="startRest(60)">1m</button>
+          <button class="btn btn-secondary" style="padding:5px 10px;font-size:0.8rem" onclick="startRest(90)">90s</button>
+          <button class="btn btn-secondary" style="padding:5px 10px;font-size:0.8rem" onclick="startRest(120)">2m</button>
+          <button class="btn btn-secondary" style="padding:5px 10px;font-size:0.8rem" onclick="startRest(180)">3m</button>
+        </div>
+      </div>
+      <div class="timer-ring" id="restTimer" style="display:none">00</div>
+      <div style="flex:1"></div>
+      <button class="btn btn-danger" onclick="clearWorkout()"><i class="fas fa-trash"></i> Clear Workout</button>
+    </div>
+  </div>
+  <div class="workout-grid" id="exerciseGrid">
+    <div class="card text-muted" style="text-align:center;padding:40px;grid-column:1/-1">Add your first exercise above to get started!</div>
+  </div>
+</div>
+<script type="module" src="firebase-config.js"></script>
+<script>
+var exercises = JSON.parse(localStorage.getItem('workout_exercises') || '[]');
+var restInterval = null;
+var muscleColors = {
+  Chest:'#58a6ff',Back:'#a371f7',Shoulders:'#f0883e',Biceps:'#3fb950',
+  Triceps:'#d29922',Legs:'#30cfd0',Core:'#f85149',Cardio:'#e6edf3','Full Body':'#8b949e'
+};
+function addExercise() {
+  var name = document.getElementById('exName').value.trim();
+  var muscle = document.getElementById('exMuscle').value;
+  var sets = parseInt(document.getElementById('exSets').value) || 3;
+  if (!name) { alert('Please enter an exercise name'); return; }
+  var ex = {id: Date.now(), name: name, muscle: muscle, sets: Array.from({length:sets}, function(_,i){ return {num:i+1, weight:'', reps:'', done:false}; })};
+  exercises.push(ex); save(); render();
+  document.getElementById('exName').value = '';
+}
+function toggleSet(exId, setIdx) {
+  var ex = exercises.find(function(e){ return e.id === exId; });
+  if (!ex) return;
+  ex.sets[setIdx].done = !ex.sets[setIdx].done;
+  save(); updateSummary();
+  document.getElementById('set-done-' + exId + '-' + setIdx).classList.toggle('done', ex.sets[setIdx].done);
+  if (ex.sets[setIdx].done) {
+    document.getElementById('set-done-' + exId + '-' + setIdx).innerHTML = '<i class="fas fa-check"></i>';
+  } else {
+    document.getElementById('set-done-' + exId + '-' + setIdx).innerHTML = '';
+  }
+  calcVolume(exId, setIdx);
+}
+function calcVolume(exId, setIdx) {
+  var ex = exercises.find(function(e){ return e.id === exId; });
+  var w = parseFloat(document.getElementById('wt-' + exId + '-' + setIdx).value) || 0;
+  var r = parseFloat(document.getElementById('rp-' + exId + '-' + setIdx).value) || 0;
+  ex.sets[setIdx].weight = w; ex.sets[setIdx].reps = r;
+  save(); updateSummary();
+}
+function deleteExercise(exId) {
+  exercises = exercises.filter(function(e){ return e.id !== exId; });
+  save(); render();
+}
+function addSet(exId) {
+  var ex = exercises.find(function(e){ return e.id === exId; });
+  if (!ex) return;
+  ex.sets.push({num: ex.sets.length+1, weight:'', reps:'', done:false});
+  save(); render();
+}
+function save() { localStorage.setItem('workout_exercises', JSON.stringify(exercises)); }
+function clearWorkout() { if (confirm('Clear all exercises?')) { exercises = []; save(); render(); } }
+function render() {
+  var grid = document.getElementById('exerciseGrid');
+  if (exercises.length === 0) {
+    grid.innerHTML = '<div class="card text-muted" style="text-align:center;padding:40px;grid-column:1/-1">Add your first exercise above!</div>';
+    updateSummary(); return;
+  }
+  grid.innerHTML = exercises.map(function(ex) {
+    var col = muscleColors[ex.muscle] || '#8b949e';
+    var setsHtml = ex.sets.map(function(s, i) {
+      return '<div class="set-row">' +
+        '<span class="set-label" style="font-weight:600">Set ' + s.num + '</span>' +
+        '<input type="number" id="wt-' + ex.id + '-' + i + '" value="' + (s.weight||'') + '" placeholder="kg" min="0" step="0.5" onchange="calcVolume(' + ex.id + ',' + i + ')">' +
+        '<span class="text-muted" style="font-size:0.8rem">x</span>' +
+        '<input type="number" id="rp-' + ex.id + '-' + i + '" value="' + (s.reps||'') + '" placeholder="reps" min="0" onchange="calcVolume(' + ex.id + ',' + i + ')">' +
+        '<button class="set-done' + (s.done ? ' done' : '') + '" id="set-done-' + ex.id + '-' + i + '" onclick="toggleSet(' + ex.id + ',' + i + ')">' + (s.done ? '<i class="fas fa-check"></i>' : '') + '</button>' +
+        '</div>';
+    }).join('');
+    return '<div class="exercise-card">' +
+      '<div class="ex-name"><i class="fas fa-dumbbell" style="color:' + col + '"></i>' + ex.name +
+      '<span class="muscle-tag" style="background:' + col + '22;color:' + col + '">' + ex.muscle + '</span>' +
+      '<button class="btn btn-danger" style="margin-left:auto;padding:3px 8px;font-size:0.75rem" onclick="deleteExercise(' + ex.id + ')"><i class="fas fa-trash"></i></button></div>' +
+      setsHtml +
+      '<button class="btn btn-secondary" style="margin-top:6px;padding:4px 10px;font-size:0.78rem;width:100%" onclick="addSet(' + ex.id + ')"><i class="fas fa-plus"></i> Add Set</button>' +
+      '</div>';
+  }).join('');
+  updateSummary();
+}
+function updateSummary() {
+  var totalSets = 0, doneSets = 0, vol = 0;
+  exercises.forEach(function(ex) {
+    totalSets += ex.sets.length;
+    ex.sets.forEach(function(s) {
+      if (s.done) { doneSets++; vol += (parseFloat(s.weight)||0) * (parseFloat(s.reps)||0); }
+    });
+  });
+  document.getElementById('totalEx').textContent = exercises.length;
+  document.getElementById('totalSets').textContent = totalSets;
+  document.getElementById('doneSets').textContent = doneSets;
+  document.getElementById('totalVol').textContent = Math.round(vol);
+}
+function startRest(secs) {
+  if (restInterval) clearInterval(restInterval);
+  var left = secs;
+  var el = document.getElementById('restTimer');
+  el.style.display = 'flex';
+  el.style.borderTopColor = 'var(--blue)';
+  function tick() {
+    var m = Math.floor(left/60), s = left%60;
+    el.textContent = (m > 0 ? m + ':' : '') + (s < 10 ? '0' : '') + s;
+    if (left <= 0) {
+      clearInterval(restInterval); restInterval = null;
+      el.textContent = 'Done!'; el.style.borderTopColor = '#3fb950';
+      setTimeout(function(){ el.style.display = 'none'; }, 2000);
+    }
+    left--;
+  }
+  tick();
+  restInterval = setInterval(tick, 1000);
+}
+function toggleTheme() {
+  document.body.classList.toggle('light');
+  var icon = document.querySelector('.theme-toggle i');
+  icon.classList.toggle('fa-moon'); icon.classList.toggle('fa-sun');
+  localStorage.setItem('theme', document.body.classList.contains('light') ? 'light' : 'dark');
+}
+if (localStorage.getItem('theme') === 'light') { document.body.classList.add('light'); document.querySelector('.theme-toggle i').classList.replace('fa-moon','fa-sun'); }
+render();
+</script>
+</body>
+</html>
