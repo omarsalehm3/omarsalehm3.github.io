@@ -8,52 +8,52 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
-.chat-container{display:flex;flex-direction:column;height:calc(100vh - 140px);max-width:900px;margin:0 auto;padding:0 20px 20px}
-.chat-messages{flex:1;overflow-y:auto;padding:20px 0;display:flex;flex-direction:column;gap:16px;scroll-behavior:smooth}
-.msg{display:flex;gap:12px;align-items:flex-start;max-width:80%;animation:fadeSlideIn 0.3s ease}
+.chat-wrap{display:flex;flex-direction:column;height:calc(100vh - 120px);max-width:900px;margin:0 auto;padding:0 20px 16px}
+.chat-messages{flex:1;overflow-y:auto;padding:16px 0;display:flex;flex-direction:column;gap:14px;scroll-behavior:smooth}
+.msg{display:flex;gap:10px;align-items:flex-start;max-width:82%;animation:fadeSlideIn 0.3s ease}
 .msg.user{flex-direction:row-reverse;align-self:flex-end}
-@keyframes fadeSlideIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
-.msg-avatar{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0}
+@keyframes fadeSlideIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.msg-avatar{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.95rem;flex-shrink:0}
 .msg.bot .msg-avatar{background:linear-gradient(135deg,#30cfd0,#330867);color:#fff}
 .msg.user .msg-avatar{background:linear-gradient(135deg,#58a6ff,#a371f7);color:#fff}
 .msg-bubble{position:relative}
-.msg-content{background:#161b22;border:1px solid #30363d;border-radius:16px;padding:12px 16px;line-height:1.6;font-size:0.95rem}
+.msg-content{background:#161b22;border:1px solid #30363d;border-radius:16px;padding:11px 15px;line-height:1.65;font-size:0.93rem;word-break:break-word}
 .msg.user .msg-content{background:linear-gradient(135deg,rgba(88,166,255,0.15),rgba(163,113,247,0.15));border-color:#58a6ff}
-.msg-time{font-size:0.7rem;color:#6e7681;margin-top:4px}
-.msg-actions{display:none;gap:6px;margin-top:6px;flex-wrap:wrap}
+.msg-time{font-size:0.68rem;color:#6e7681;margin-top:3px}
+.msg-actions{display:none;gap:5px;margin-top:5px;flex-wrap:wrap}
 .msg:hover .msg-actions{display:flex}
-.msg-action-btn{background:rgba(255,255,255,0.07);border:1px solid #30363d;color:#8b949e;padding:3px 10px;border-radius:8px;font-size:0.72rem;cursor:pointer;transition:all 0.2s;display:flex;align-items:center;gap:4px}
+.msg-action-btn{background:rgba(255,255,255,0.07);border:1px solid #30363d;color:#8b949e;padding:2px 9px;border-radius:8px;font-size:0.7rem;cursor:pointer;transition:all 0.2s;display:flex;align-items:center;gap:4px}
 .msg-action-btn:hover{background:rgba(88,166,255,0.15);color:#58a6ff;border-color:#58a6ff}
 .msg-action-btn.copied{color:#3fb950;border-color:#3fb950}
-.chat-input-area{display:flex;gap:10px;padding:15px;background:#161b22;border:1px solid #30363d;border-radius:16px;align-items:flex-end}
-.chat-input{flex:1;background:none;border:none;outline:none;color:#e6edf3;font-size:0.95rem;font-family:inherit;resize:none;max-height:120px;min-height:24px}
+.chat-footer{background:#161b22;border:1px solid #30363d;border-radius:14px;padding:10px 14px}
+.input-row{display:flex;gap:10px;align-items:flex-end}
+.chat-input{flex:1;background:none;border:none;outline:none;color:#e6edf3;font-size:0.93rem;font-family:inherit;resize:none;max-height:120px;min-height:22px;line-height:1.5}
 .chat-input::placeholder{color:#6e7681}
-.input-footer{display:flex;justify-content:space-between;align-items:center;padding:4px 2px 0}
-.char-counter{font-size:0.72rem;color:#6e7681}
+.input-meta{display:flex;justify-content:space-between;align-items:center;padding:4px 2px 0}
+.char-counter{font-size:0.7rem;color:#6e7681}
 .char-counter.warn{color:#f0883e}
-.send-btn{background:linear-gradient(135deg,#58a6ff,#a371f7);border:none;color:#fff;width:40px;height:40px;border-radius:10px;cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:opacity 0.2s}
+.status-bar{font-size:0.7rem;color:#6e7681}
+.send-btn{background:linear-gradient(135deg,#58a6ff,#a371f7);border:none;color:#fff;width:38px;height:38px;border-radius:10px;cursor:pointer;font-size:0.95rem;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:opacity 0.2s}
 .send-btn:hover{opacity:0.85}
 .send-btn:disabled{opacity:0.4;cursor:not-allowed}
-.typing{display:flex;gap:4px;align-items:center;padding:4px 0}
-.typing span{width:8px;height:8px;background:#58a6ff;border-radius:50%;animation:bounce 1.2s infinite}
+.typing{display:flex;gap:4px;align-items:center}
+.typing span{width:7px;height:7px;background:#58a6ff;border-radius:50%;animation:typingBounce 1.2s infinite}
 .typing span:nth-child(2){animation-delay:0.2s}
 .typing span:nth-child(3){animation-delay:0.4s}
-@keyframes bounce{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-8px)}}
-.suggestions{display:flex;gap:8px;flex-wrap:wrap;padding:8px 0 0}
-.suggestion-chip{background:rgba(88,166,255,0.1);border:1px solid rgba(88,166,255,0.3);color:#58a6ff;padding:4px 12px;border-radius:20px;font-size:0.78rem;cursor:pointer;transition:all 0.2s}
+@keyframes typingBounce{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-7px)}}
+.suggestions{display:flex;gap:7px;flex-wrap:wrap;padding:6px 0 0}
+.suggestion-chip{background:rgba(88,166,255,0.1);border:1px solid rgba(88,166,255,0.3);color:#58a6ff;padding:4px 11px;border-radius:20px;font-size:0.76rem;cursor:pointer;transition:all 0.2s}
 .suggestion-chip:hover{background:rgba(88,166,255,0.2)}
-.quick-bar{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-.status-bar{font-size:0.75rem;color:#6e7681;text-align:right;padding:2px 4px}
-code{background:rgba(255,255,255,0.1);padding:2px 6px;border-radius:4px;font-family:monospace}
-pre{background:rgba(0,0,0,0.3);border:1px solid #30363d;border-radius:8px;padding:12px;overflow-x:auto;font-family:monospace;font-size:0.85rem;white-space:pre-wrap}
+.quick-bar{display:flex;gap:7px;align-items:center;flex-wrap:wrap;padding:10px 20px;background:var(--card);border:1px solid var(--border);border-radius:12px;margin-top:8px}
+code{background:rgba(255,255,255,0.1);padding:2px 5px;border-radius:4px;font-family:monospace;font-size:0.88em}
+pre{background:rgba(0,0,0,0.3);border:1px solid #30363d;border-radius:8px;padding:10px;overflow-x:auto;font-family:monospace;font-size:0.83rem;white-space:pre-wrap}
 body.light .msg-content{background:#f5f5f5;border-color:#e0e0e0}
 body.light .msg.user .msg-content{background:rgba(88,166,255,0.1)}
-body.light .chat-input-area{background:#fff;border-color:#e0e0e0}
+body.light .chat-footer{background:#fff;border-color:#e0e0e0}
 body.light .chat-input{color:#1a1a2e}
-body.light .msg-action-btn{background:rgba(0,0,0,0.05);border-color:#d0d7de;color:#57606a}
-body.light code{background:rgba(0,0,0,0.08)}
+body.light code{background:rgba(0,0,0,0.07)}
 body.light pre{background:#f6f8fa;border-color:#d0d7de}
-body.light .suggestion-chip{background:rgba(88,166,255,0.08);color:#0969da}
+body.light .suggestion-chip{color:#0969da}
 </style>
 </head>
 <body>
@@ -64,13 +64,22 @@ body.light .suggestion-chip{background:rgba(88,166,255,0.08);color:#0969da}
   </div>
   <div class="nav-links">
     <a href="index.html"><i class="fas fa-home"></i> Home</a>
-    <a href="todo.html"><i class="fas fa-check-square"></i> To-Do</a>
-    <a href="timer.html"><i class="fas fa-clock"></i> Timer</a>
-    <a href="converter.html"><i class="fas fa-exchange-alt"></i> Converter</a>
-    <a href="budget.html"><i class="fas fa-wallet"></i> Budget</a>
-    <a href="notes.html"><i class="fas fa-sticky-note"></i> Notes</a>
-    <a href="habits.html"><i class="fas fa-fire"></i> Habits</a>
-    <a href="passwords.html"><i class="fas fa-key"></i> Passwords</a>
+    <div class="nav-dropdown">
+      <button class="nav-dropdown-btn"><i class="fas fa-th-large"></i> Tools <i class="fas fa-chevron-down" style="font-size:0.7rem;margin-left:2px"></i></button>
+      <div class="nav-dropdown-menu">
+        <a href="todo.html"><i class="fas fa-check-square"></i> To-Do List</a>
+        <a href="timer.html"><i class="fas fa-clock"></i> Pomodoro Timer</a>
+        <a href="budget.html"><i class="fas fa-wallet"></i> Budget</a>
+        <a href="notes.html"><i class="fas fa-sticky-note"></i> Notes</a>
+        <a href="habits.html"><i class="fas fa-fire"></i> Habits</a>
+        <a href="converter.html"><i class="fas fa-exchange-alt"></i> Converter</a>
+        <a href="passwords.html"><i class="fas fa-key"></i> Passwords</a>
+        <a href="calculator.html"><i class="fas fa-calculator"></i> Calculator</a>
+        <a href="flashcards.html"><i class="fas fa-layer-group"></i> Flashcards</a>
+        <a href="weather.html"><i class="fas fa-cloud-sun"></i> Weather</a>
+        <a href="workout.html"><i class="fas fa-dumbbell"></i> Workout</a>
+      </div>
+    </div>
     <a href="chatbot.html" class="active"><i class="fas fa-robot"></i> AI Chat</a>
   </div>
   <div class="nav-right">
@@ -79,40 +88,37 @@ body.light .suggestion-chip{background:rgba(88,166,255,0.08);color:#0969da}
     <button class="theme-toggle" onclick="toggleTheme()"><i class="fas fa-moon"></i></button>
   </div>
 </nav>
-<div class="chat-container">
+<div class="chat-wrap">
   <div id="chatMessages" class="chat-messages">
     <div class="msg bot">
       <div class="msg-avatar"><i class="fas fa-robot"></i></div>
       <div class="msg-bubble">
-        <div class="msg-content">Hi! I am your AI assistant powered by Gemini. I can help you with your to-do lists, budgeting, productivity, and much more. Ask me anything!</div>
+        <div class="msg-content">Hi! I am your AI assistant powered by Gemini. I can help with your tasks, budgeting, habits, workouts, weather, flashcards, and much more. Ask me anything!</div>
         <div class="msg-time">Just now</div>
       </div>
     </div>
   </div>
-  <div style="padding:0 2px 8px">
-    <div class="input-footer">
+  <div class="chat-footer">
+    <div class="input-row">
+      <textarea class="chat-input" id="chatInput" placeholder="Type your message... (Enter to send)" rows="1"></textarea>
+      <button class="send-btn" id="sendBtn" onclick="sendMessage()" title="Send (Enter)"><i class="fas fa-paper-plane"></i></button>
+    </div>
+    <div class="input-meta">
       <span class="char-counter" id="charCounter">0 / 2000</span>
       <span class="status-bar" id="statusBar"></span>
     </div>
   </div>
-  <div class="chat-input-area">
-    <textarea class="chat-input" id="chatInput" placeholder="Type your message..." rows="1"></textarea>
-    <button class="send-btn" id="sendBtn" onclick="sendMessage()" title="Send (Enter)"><i class="fas fa-paper-plane"></i></button>
-  </div>
 </div>
-<div class="container" style="padding-top:0">
-  <div class="card mt-2" style="padding:12px 20px">
-    <div class="quick-bar">
-      <span class="text-muted" style="font-size:0.85rem">Quick prompts:</span>
-      <button class="btn btn-secondary" style="padding:5px 12px;font-size:0.8rem" onclick="setPrompt('Help me create a to-do list for today')">To-Do list</button>
-      <button class="btn btn-secondary" style="padding:5px 12px;font-size:0.8rem" onclick="setPrompt('Give me 5 productivity tips')">Productivity tips</button>
-      <button class="btn btn-secondary" style="padding:5px 12px;font-size:0.8rem" onclick="setPrompt('Help me plan a weekly budget')">Budget plan</button>
-      <button class="btn btn-secondary" style="padding:5px 12px;font-size:0.8rem" onclick="setPrompt('Give me a motivational quote')">Motivation</button>
-      <button class="btn btn-secondary" style="padding:5px 12px;font-size:0.8rem" onclick="setPrompt('What should I cook for dinner?')">Dinner idea</button>
-      <button class="btn btn-secondary" style="padding:5px 12px;font-size:0.8rem" onclick="exportChat()"><i class="fas fa-download"></i> Export</button>
-      <button class="btn btn-danger" style="padding:5px 12px;font-size:0.8rem" onclick="clearChat()"><i class="fas fa-trash"></i> Clear</button>
-    </div>
-  </div>
+<div class="quick-bar">
+  <span class="text-muted" style="font-size:0.82rem;white-space:nowrap">Quick:</span>
+  <button class="btn btn-secondary" style="padding:4px 11px;font-size:0.78rem" onclick="setPrompt('Help me create a to-do list for today')">To-Do list</button>
+  <button class="btn btn-secondary" style="padding:4px 11px;font-size:0.78rem" onclick="setPrompt('Give me 5 productivity tips')">Productivity</button>
+  <button class="btn btn-secondary" style="padding:4px 11px;font-size:0.78rem" onclick="setPrompt('Help me plan a weekly budget')">Budget plan</button>
+  <button class="btn btn-secondary" style="padding:4px 11px;font-size:0.78rem" onclick="setPrompt('Give me a motivational quote')">Motivation</button>
+  <button class="btn btn-secondary" style="padding:4px 11px;font-size:0.78rem" onclick="setPrompt('Suggest a 20 minute workout routine')">Workout</button>
+  <button class="btn btn-secondary" style="padding:4px 11px;font-size:0.78rem" onclick="setPrompt('What should I cook for dinner?')">Dinner idea</button>
+  <button class="btn btn-secondary" style="padding:4px 11px;font-size:0.78rem" onclick="exportChat()"><i class="fas fa-download"></i> Export</button>
+  <button class="btn btn-danger" style="padding:4px 11px;font-size:0.78rem" onclick="clearChat()"><i class="fas fa-trash"></i> Clear</button>
 </div>
 <script type="module" src="firebase-config.js"></script>
 <script>
@@ -121,11 +127,12 @@ var GEMINI_MODEL = 'gemini-2.5-flash';
 var chatHistory = [];
 var lastUserMessage = '';
 var messageCount = 0;
-var SYSTEM_PROMPT = 'You are a friendly and helpful AI assistant embedded in OGuard Hub, a personal productivity web app. The app has these tools: To-Do list, Timer (Pomodoro), Unit Converter, Budget Tracker, Notes, Habit Tracker, and Password Generator. When relevant, suggest users try these tools. Keep responses concise but thorough. Format code in backticks. Use bullet points for lists. Be encouraging and supportive.';
+var SYSTEM_PROMPT = 'You are a friendly and helpful AI assistant embedded in OGuard Hub, a personal productivity web app. Tools available: To-Do list, Pomodoro Timer, Budget Tracker, Notes, Habit Tracker, Unit Converter, Password Generator, Calculator, Flashcards, Weather, and Workout Tracker. When relevant, suggest users try these tools. Keep responses concise but thorough. Format code in backticks. Use bullet points for lists. Be encouraging and supportive.';
 var SUGGESTIONS = {
   productivity: ['How do I use the Pomodoro technique?', 'Help me prioritize my tasks', 'What are good study habits?'],
   budget: ['How do I stick to a budget?', 'Tips for saving money', 'What is the 50/30/20 rule?'],
   habits: ['How do I build a new habit?', 'What habits improve productivity?', 'Tips for staying consistent'],
+  workout: ['Best beginner workout routine?', 'How many days should I work out?', 'Quick 10-minute exercises'],
   general: ['Summarize what we discussed', 'Give me a motivational quote', 'What else can you help with?']
 };
 function setPrompt(text) {
@@ -150,22 +157,23 @@ function clearChat() {
 }
 function exportChat() {
   if (chatHistory.length === 0) { alert('No messages to export yet!'); return; }
-  var lines = ['OGuard Hub - AI Chat Export', 'Date: ' + new Date().toLocaleString(), '---
-'];
-  chatHistory.forEach(function(msg) { var role = msg.role === 'user' ? 'You' : 'AI'; lines.push(role + ': ' + msg.parts[0].text); lines.push(''); });
+  var lines = ['OGuard Hub - AI Chat Export', 'Date: ' + new Date().toLocaleString(), '---'];
+  chatHistory.forEach(function(msg) { lines.push((msg.role === 'user' ? 'You' : 'AI') + ': ' + msg.parts[0].text); lines.push(''); });
   var blob = new Blob([lines.join('
 ')], {type: 'text/plain'});
-  var a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'chat-export-' + Date.now() + '.txt'; a.click();
+  var a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'chat-' + Date.now() + '.txt'; a.click();
 }
 function formatText(text) {
+  var BT = String.fromCharCode(96);
+  var triplePattern = new RegExp(BT+BT+BT+'([\s\S]*?)'+BT+BT+BT, 'g');
+  var singlePattern = new RegExp(BT+'([^'+BT+']+)'+BT, 'g');
   return text
     .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
-    .replace(/```([sS]*?)```/g, '<pre>$1</pre>')
-    .replace(/`([^`]+)`/g, '<code>$1</code>')
+    .replace(triplePattern, '<pre>$1</pre>')
+    .replace(singlePattern, '<code>$1</code>')
     .replace(/**([^*]+)**/g, '<strong>$1</strong>')
     .replace(/*([^*]+)*/g, '<em>$1</em>')
-    .replace(/^- (.+)/gm, '<li>$1</li>')
-    .replace(/(<li>.*</li>)/s, '<ul style="margin:8px 0;padding-left:20px">$1</ul>')
+    .replace(/^[-*] (.+)/gm, '<li style="margin-left:16px">$1</li>')
     .replace(/
 /g, '<br>');
 }
@@ -176,21 +184,19 @@ function addMessage(text, role) {
   messageCount++;
   var outer = document.createElement('div'); outer.className = 'msg ' + role;
   var icon = role === 'user' ? 'fa-user' : 'fa-robot';
-  var actionsHtml = '';
   var enc = encodeURIComponent(text);
-  if (role === 'bot') {
-    actionsHtml = '<div class="msg-actions"><button class="msg-action-btn" onclick="copyMessage(this,decodeURIComponent(\'' + enc + '\'))"><i class="fas fa-copy"></i> Copy</button><button class="msg-action-btn" onclick="regenerateMessage()"><i class="fas fa-redo"></i> Regenerate</button></div>';
-  } else {
-    actionsHtml = '<div class="msg-actions"><button class="msg-action-btn" onclick="copyMessage(this,decodeURIComponent(\'' + enc + '\'))"><i class="fas fa-copy"></i> Copy</button></div>';
-  }
+  var actionsHtml = role === 'bot'
+    ? '<div class="msg-actions"><button class="msg-action-btn" onclick="copyMsg(this,'' + enc + '')"><i class="fas fa-copy"></i> Copy</button><button class="msg-action-btn" onclick="regenMsg()"><i class="fas fa-redo"></i> Regenerate</button></div>'
+    : '<div class="msg-actions"><button class="msg-action-btn" onclick="copyMsg(this,'' + enc + '')"><i class="fas fa-copy"></i> Copy</button></div>';
   outer.innerHTML = '<div class="msg-avatar"><i class="fas ' + icon + '"></i></div><div class="msg-bubble"><div class="msg-content">' + formatted + '</div><div class="msg-time">' + time + '</div>' + actionsHtml + '</div>';
   msgs.appendChild(outer); msgs.scrollTop = msgs.scrollHeight;
   return outer;
 }
 function addSuggestions(category) {
   var msgs = document.getElementById('chatMessages');
+  removeSuggestions();
   var chips = SUGGESTIONS[category] || SUGGESTIONS.general;
-  var div = document.createElement('div'); div.className = 'suggestions'; div.id = 'suggestionBar';
+  var div = document.createElement('div'); div.className = 'suggestions'; div.id = 'suggBar';
   chips.forEach(function(chip) {
     var btn = document.createElement('button'); btn.className = 'suggestion-chip'; btn.textContent = chip;
     btn.onclick = function() { setPrompt(chip); div.remove(); };
@@ -198,42 +204,46 @@ function addSuggestions(category) {
   });
   msgs.appendChild(div); msgs.scrollTop = msgs.scrollHeight;
 }
-function removeSuggestions() { var s = document.getElementById('suggestionBar'); if (s) s.remove(); }
-function copyMessage(btn, text) {
-  navigator.clipboard.writeText(text).then(function() {
+function removeSuggestions() { var s = document.getElementById('suggBar'); if (s) s.remove(); }
+function copyMsg(btn, enc) {
+  navigator.clipboard.writeText(decodeURIComponent(enc)).then(function() {
     btn.innerHTML = '<i class="fas fa-check"></i> Copied!'; btn.classList.add('copied');
     setTimeout(function() { btn.innerHTML = '<i class="fas fa-copy"></i> Copy'; btn.classList.remove('copied'); }, 2000);
   });
 }
-function regenerateMessage() {
+function regenMsg() {
   if (!lastUserMessage) return;
   if (chatHistory.length >= 2) chatHistory.pop();
   var msgs = document.getElementById('chatMessages');
-  var allMsgs = msgs.querySelectorAll('.msg.bot');
-  var last = allMsgs[allMsgs.length - 1];
+  var allBot = msgs.querySelectorAll('.msg.bot');
+  var last = allBot[allBot.length - 1];
   if (last) last.remove();
   removeSuggestions(); callGemini(lastUserMessage);
 }
 function showTyping() {
   var msgs = document.getElementById('chatMessages');
-  var div = document.createElement('div'); div.className = 'msg bot'; div.id = 'typingIndicator';
+  var div = document.createElement('div'); div.className = 'msg bot'; div.id = 'typingDot';
   div.innerHTML = '<div class="msg-avatar"><i class="fas fa-robot"></i></div><div class="msg-bubble"><div class="msg-content"><div class="typing"><span></span><span></span><span></span></div></div></div>';
   msgs.appendChild(div); msgs.scrollTop = msgs.scrollHeight;
 }
-function removeTyping() { var t = document.getElementById('typingIndicator'); if (t) t.remove(); }
+function removeTyping() { var t = document.getElementById('typingDot'); if (t) t.remove(); }
 function detectCategory(text) {
   text = text.toLowerCase();
   if (/budget|money|spend|save|expense|cost/.test(text)) return 'budget';
   if (/habit|routine|streak|daily/.test(text)) return 'habits';
+  if (/workout|exercise|gym|fitness|training/.test(text)) return 'workout';
   if (/todo|task|list|plan|schedule|productivity|focus|timer|pomodoro/.test(text)) return 'productivity';
   return 'general';
 }
 async function callGemini(userText) {
   document.getElementById('sendBtn').disabled = true;
-  document.getElementById('statusBar').textContent = 'AI is thinking...';
+  document.getElementById('statusBar').textContent = 'Thinking...';
   showTyping();
   try {
-    var messages = [{role:'user', parts:[{text: SYSTEM_PROMPT}]}, {role:'model', parts:[{text:'Understood! I am ready to help OGuard Hub users.'}]}].concat(chatHistory);
+    var messages = [
+      {role:'user', parts:[{text: SYSTEM_PROMPT}]},
+      {role:'model', parts:[{text:'Ready to help!'}]}
+    ].concat(chatHistory);
     var r = await fetch('https://generativelanguage.googleapis.com/v1beta/models/' + GEMINI_MODEL + ':generateContent?key=' + GEMINI_KEY, {
       method: 'POST', headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({contents: messages, generationConfig: {maxOutputTokens: 1500, temperature: 0.7}})
@@ -246,14 +256,14 @@ async function callGemini(userText) {
       addSuggestions(detectCategory(userText));
       document.getElementById('statusBar').textContent = messageCount + ' messages';
     } else if (data.error) {
-      addMessage('Error: ' + data.error.message, 'bot');
+      addMessage('API Error: ' + data.error.message, 'bot');
       document.getElementById('statusBar').textContent = '';
     } else {
-      addMessage('Sorry, could not get a response. Please try again.', 'bot');
+      addMessage('No response received. Please try again.', 'bot');
       document.getElementById('statusBar').textContent = '';
     }
   } catch(e) {
-    removeTyping(); addMessage('Connection error. Please check your internet and try again.', 'bot');
+    removeTyping(); addMessage('Connection error. Check your internet and try again.', 'bot');
     document.getElementById('statusBar').textContent = '';
   } finally { document.getElementById('sendBtn').disabled = false; }
 }
@@ -267,8 +277,12 @@ async function sendMessage() {
   chatHistory.push({role: 'user', parts: [{text: text}]});
   await callGemini(text);
 }
-document.getElementById('chatInput').addEventListener('keydown', function(e) { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); } });
-document.getElementById('chatInput').addEventListener('input', function() { this.style.height = 'auto'; this.style.height = Math.min(this.scrollHeight, 120) + 'px'; updateCharCounter(); });
+document.getElementById('chatInput').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+});
+document.getElementById('chatInput').addEventListener('input', function() {
+  this.style.height = 'auto'; this.style.height = Math.min(this.scrollHeight, 120) + 'px'; updateCharCounter();
+});
 function toggleTheme() {
   document.body.classList.toggle('light');
   var icon = document.querySelector('.theme-toggle i');
