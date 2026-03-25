@@ -8,42 +8,49 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
-.notes-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:16px}
-.note-card{background:#161b22;border:1px solid #30363d;border-radius:12px;padding:18px;position:relative;transition:transform 0.2s}
-.note-card:hover{transform:translateY(-3px)}
-.note-card .note-title{font-weight:600;margin-bottom:8px}
-.note-card .note-body{color:#8b949e;font-size:0.875rem;line-height:1.6;white-space:pre-wrap;word-break:break-word}
-.note-card .note-date{font-size:0.7rem;color:#6e7681;margin-top:10px}
-.note-card .note-del{position:absolute;top:10px;right:10px;background:none;border:none;color:#6e7681;cursor:pointer;font-size:0.9rem}
-.note-card .note-del:hover{color:#f85149}
+.notes-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px}
+.note-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:18px;position:relative;transition:transform 0.2s,box-shadow 0.2s;animation:fadeIn 0.3s ease}
+.note-card:hover{transform:translateY(-3px);box-shadow:0 8px 24px rgba(0,0,0,0.2)}
+.note-card .note-title{font-weight:600;margin-bottom:8px;font-size:0.95rem}
+.note-card .note-body{color:var(--text2);font-size:0.875rem;line-height:1.6;white-space:pre-wrap;word-break:break-word}
+.note-card .note-date{font-size:0.7rem;color:var(--text2);margin-top:10px;opacity:0.7}
+.note-card .note-del{position:absolute;top:10px;right:10px;background:none;border:none;color:var(--text2);cursor:pointer;font-size:0.9rem;padding:4px;border-radius:6px;transition:all 0.2s}
+.note-card .note-del:hover{color:#f85149;background:rgba(248,81,73,0.1)}
 body.light .note-card{background:#fff;border-color:#e0e0e0}
 </style>
 </head>
 <body>
 <nav class="navbar">
-  <div class="nav-brand"><a href="index.html" style="color:inherit;text-decoration:none"><i class="fas fa-shield-alt"></i> OGuard Hub</a></div>
+  <div class="nav-brand">
+    <div class="nav-brand-icon"><i class="fas fa-shield-alt"></i></div>
+    <a href="index.html" style="color:inherit;text-decoration:none;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent">OGuard Hub</a>
+  </div>
   <div class="nav-links">
     <a href="index.html"><i class="fas fa-home"></i> Home</a>
     <a href="todo.html"><i class="fas fa-check-square"></i> To-Do</a>
     <a href="timer.html"><i class="fas fa-clock"></i> Timer</a>
     <a href="converter.html"><i class="fas fa-exchange-alt"></i> Converter</a>
     <a href="budget.html"><i class="fas fa-wallet"></i> Budget</a>
-    <a href="quiz.html"><i class="fas fa-question-circle"></i> Quiz</a>
-    <a href="notes.html"><i class="fas fa-sticky-note"></i> Notes</a>
+    <a href="notes.html" class="active"><i class="fas fa-sticky-note"></i> Notes</a>
+    <a href="habits.html"><i class="fas fa-fire"></i> Habits</a>
+    <a href="passwords.html"><i class="fas fa-key"></i> Passwords</a>
     <a href="chatbot.html"><i class="fas fa-robot"></i> AI Chat</a>
   </div>
-  <div class="flex" style="gap:8px;align-items:center">
-    <span id="navUser" style="display:none;font-size:0.85rem;color:#8b949e"></span>
+  <div class="nav-right">
+    <span id="navUser" style="display:none;font-size:0.82rem;color:var(--text2)"></span>
     <button class="btn btn-secondary" style="padding:6px 14px;font-size:0.8rem" onclick="logoutUser()"><i class="fas fa-sign-out-alt"></i> Logout</button>
     <button class="theme-toggle" onclick="toggleTheme()"><i class="fas fa-moon"></i></button>
   </div>
 </nav>
-
 <div class="page-header">
-  <h1><i class="fas fa-sticky-note"></i> Quick Notes</h1>
-  <p>Jot down ideas that auto-save</p>
+  <div class="page-header-inner">
+    <div class="page-icon"><i class="fas fa-sticky-note"></i></div>
+    <div>
+      <h1>Quick Notes</h1>
+      <p>Jot down ideas that auto-save</p>
+    </div>
+  </div>
 </div>
-
 <div class="container">
   <div class="card">
     <input type="text" id="noteTitle" placeholder="Note title..." style="margin-bottom:10px">
@@ -62,27 +69,17 @@ body.light .note-card{background:#fff;border-color:#e0e0e0}
   </div>
   <div class="notes-grid" id="notesList"></div>
 </div>
-
 <script type="module" src="firebase-config.js"></script>
 <script>
 var editingId = null;
 var notes = JSON.parse(localStorage.getItem('quicknotes') || '[]');
-
 function saveNote() {
   var title = document.getElementById('noteTitle').value.trim() || 'Untitled';
   var body = document.getElementById('noteBody').value.trim();
-  if (!body) {
-    alert('Please write something in the note body before saving.');
-    return;
-  }
+  if (!body) { alert('Please write something in the note body before saving.'); return; }
   if (editingId !== null) {
     for (var i = 0; i < notes.length; i++) {
-      if (notes[i].id === editingId) {
-        notes[i].title = title;
-        notes[i].body = body;
-        notes[i].date = new Date().toLocaleString();
-        break;
-      }
+      if (notes[i].id === editingId) { notes[i].title = title; notes[i].body = body; notes[i].date = new Date().toLocaleString(); break; }
     }
     editingId = null;
   } else {
@@ -92,18 +89,10 @@ function saveNote() {
   localStorage.setItem('quicknotes', JSON.stringify(notes));
   renderNotes();
 }
-
-function deleteNote(id) {
-  notes = notes.filter(function(n) { return n.id !== id; });
-  localStorage.setItem('quicknotes', JSON.stringify(notes));
-  renderNotes();
-}
-
+function deleteNote(id) { notes = notes.filter(function(n) { return n.id !== id; }); localStorage.setItem('quicknotes', JSON.stringify(notes)); renderNotes(); }
 function editNote(id) {
   var n = null;
-  for (var i = 0; i < notes.length; i++) {
-    if (notes[i].id === id) { n = notes[i]; break; }
-  }
+  for (var i = 0; i < notes.length; i++) { if (notes[i].id === id) { n = notes[i]; break; } }
   if (!n) return;
   editingId = id;
   document.getElementById('noteTitle').value = n.title;
@@ -111,72 +100,38 @@ function editNote(id) {
   document.getElementById('charCount').textContent = n.body.length + ' characters';
   window.scrollTo({top: 0, behavior: 'smooth'});
 }
-
-function clearForm() {
-  document.getElementById('noteTitle').value = '';
-  document.getElementById('noteBody').value = '';
-  document.getElementById('charCount').textContent = '0 characters';
-  editingId = null;
-}
-
-function clearAllNotes() {
-  if (confirm('Delete all notes? This cannot be undone.')) {
-    notes = [];
-    localStorage.setItem('quicknotes', JSON.stringify(notes));
-    renderNotes();
-  }
-}
-
-function escapeHtml(str) {
-  return str
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;');
-}
-
+function clearForm() { document.getElementById('noteTitle').value = ''; document.getElementById('noteBody').value = ''; document.getElementById('charCount').textContent = '0 characters'; editingId = null; }
+function clearAllNotes() { if (confirm('Delete all notes? This cannot be undone.')) { notes = []; localStorage.setItem('quicknotes', JSON.stringify(notes)); renderNotes(); } }
+function escapeHtml(str) { return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 function renderNotes() {
   var q = document.getElementById('searchNotes').value.toLowerCase();
-  var filtered = notes.filter(function(n) {
-    return n.title.toLowerCase().indexOf(q) !== -1 || n.body.toLowerCase().indexOf(q) !== -1;
-  });
+  var filtered = notes.filter(function(n) { return n.title.toLowerCase().indexOf(q) !== -1 || n.body.toLowerCase().indexOf(q) !== -1; });
   var grid = document.getElementById('notesList');
-  if (filtered.length === 0) {
-    grid.innerHTML = '<div class="text-muted" style="grid-column:1/-1;text-align:center;padding:40px">No notes yet. Write your first note above!</div>';
-    return;
-  }
+  if (filtered.length === 0) { grid.innerHTML = '<div class="text-muted" style="grid-column:1/-1;text-align:center;padding:40px">No notes yet. Write your first note above!</div>'; return; }
   var html = '';
   for (var i = 0; i < filtered.length; i++) {
     var n = filtered[i];
     var preview = escapeHtml(n.body.substring(0, 200)) + (n.body.length > 200 ? '...' : '');
-    var safeTitle = escapeHtml(n.title);
-    var safeDate = escapeHtml(n.date);
     html += '<div class="note-card">';
     html += '<button class="note-del" onclick="deleteNote(' + n.id + ')"><i class="fas fa-times"></i></button>';
-    html += '<div class="note-title">' + safeTitle + '</div>';
+    html += '<div class="note-title">' + escapeHtml(n.title) + '</div>';
     html += '<div class="note-body">' + preview + '</div>';
-    html += '<div class="note-date">' + safeDate + ' &nbsp; <a href="#" onclick="editNote(' + n.id + ');return false;" style="color:#58a6ff">Edit</a></div>';
+    html += '<div class="note-date">' + escapeHtml(n.date) + ' &nbsp; <a href="#" onclick="editNote(' + n.id + ');return false;" style="color:var(--blue)">Edit</a></div>';
     html += '</div>';
   }
   grid.innerHTML = html;
 }
-
-document.getElementById('noteBody').addEventListener('input', function() {
-  document.getElementById('charCount').textContent = this.value.length + ' characters';
-});
-
+document.getElementById('noteBody').addEventListener('input', function() { document.getElementById('charCount').textContent = this.value.length + ' characters'; });
 function toggleTheme() {
   document.body.classList.toggle('light');
   var icon = document.querySelector('.theme-toggle i');
-  icon.classList.toggle('fa-moon');
-  icon.classList.toggle('fa-sun');
+  icon.classList.toggle('fa-moon'); icon.classList.toggle('fa-sun');
   localStorage.setItem('theme', document.body.classList.contains('light') ? 'light' : 'dark');
 }
 if (localStorage.getItem('theme') === 'light') {
   document.body.classList.add('light');
   document.querySelector('.theme-toggle i').classList.replace('fa-moon', 'fa-sun');
 }
-
 renderNotes();
 </script>
 </body>
