@@ -10,45 +10,51 @@
 </head>
 <body>
 <nav class="navbar">
-  <div class="nav-brand"><a href="index.html" style="color:inherit;text-decoration:none"><i class="fas fa-shield-alt"></i> OGuard Hub</a></div>
+  <div class="nav-brand">
+    <div class="nav-brand-icon"><i class="fas fa-shield-alt"></i></div>
+    <a href="index.html" style="color:inherit;text-decoration:none;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent">OGuard Hub</a>
+  </div>
   <div class="nav-links">
     <a href="index.html"><i class="fas fa-home"></i> Home</a>
     <a href="todo.html"><i class="fas fa-check-square"></i> To-Do</a>
     <a href="timer.html"><i class="fas fa-clock"></i> Timer</a>
     <a href="converter.html"><i class="fas fa-exchange-alt"></i> Converter</a>
-    <a href="budget.html"><i class="fas fa-wallet"></i> Budget</a>
-    <a href="quiz.html"><i class="fas fa-question-circle"></i> Quiz</a>
+    <a href="budget.html" class="active"><i class="fas fa-wallet"></i> Budget</a>
     <a href="notes.html"><i class="fas fa-sticky-note"></i> Notes</a>
+    <a href="habits.html"><i class="fas fa-fire"></i> Habits</a>
+    <a href="passwords.html"><i class="fas fa-key"></i> Passwords</a>
     <a href="chatbot.html"><i class="fas fa-robot"></i> AI Chat</a>
   </div>
-  <div class="flex" style="gap:8px;align-items:center">
-    <span id="navUser" style="display:none;font-size:0.85rem;color:#8b949e"></span>
+  <div class="nav-right">
+    <span id="navUser" style="display:none;font-size:0.82rem;color:var(--text2)"></span>
     <button class="btn btn-secondary" style="padding:6px 14px;font-size:0.8rem" onclick="logoutUser()"><i class="fas fa-sign-out-alt"></i> Logout</button>
     <button class="theme-toggle" onclick="toggleTheme()"><i class="fas fa-moon"></i></button>
   </div>
 </nav>
-
 <div class="page-header">
-  <h1><i class="fas fa-wallet"></i> Budget Calculator</h1>
-  <p>Track your income and expenses</p>
-</div>
-
-<div class="container">
-  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:15px;margin-bottom:20px">
-    <div class="card" style="text-align:center">
-      <div class="text-muted">Total Income</div>
-      <div style="font-size:1.8rem;font-weight:700;color:#3fb950" id="totalIncome">$0.00</div>
-    </div>
-    <div class="card" style="text-align:center">
-      <div class="text-muted">Total Expenses</div>
-      <div style="font-size:1.8rem;font-weight:700;color:#f85149" id="totalExpense">$0.00</div>
-    </div>
-    <div class="card" style="text-align:center">
-      <div class="text-muted">Balance</div>
-      <div style="font-size:1.8rem;font-weight:700" id="balance">$0.00</div>
+  <div class="page-header-inner">
+    <div class="page-icon"><i class="fas fa-wallet"></i></div>
+    <div>
+      <h1>Budget Calculator</h1>
+      <p>Track your income and expenses</p>
     </div>
   </div>
-
+</div>
+<div class="container">
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:15px;margin-bottom:20px">
+    <div class="card" style="text-align:center">
+      <div class="text-muted" style="font-size:0.8rem;text-transform:uppercase;letter-spacing:0.05em">Total Income</div>
+      <div style="font-size:2rem;font-weight:700;color:#3fb950;margin-top:4px" id="totalIncome">$0.00</div>
+    </div>
+    <div class="card" style="text-align:center">
+      <div class="text-muted" style="font-size:0.8rem;text-transform:uppercase;letter-spacing:0.05em">Total Expenses</div>
+      <div style="font-size:2rem;font-weight:700;color:#f85149;margin-top:4px" id="totalExpense">$0.00</div>
+    </div>
+    <div class="card" style="text-align:center">
+      <div class="text-muted" style="font-size:0.8rem;text-transform:uppercase;letter-spacing:0.05em">Balance</div>
+      <div style="font-size:2rem;font-weight:700;margin-top:4px" id="balance">$0.00</div>
+    </div>
+  </div>
   <div class="card">
     <h3 style="margin-bottom:15px">Add Transaction</h3>
     <div class="flex flex-wrap" style="gap:10px">
@@ -70,107 +76,67 @@
       <button class="btn btn-primary" onclick="addTransaction()"><i class="fas fa-plus"></i> Add</button>
     </div>
   </div>
-
   <div class="card">
-    <h3 style="margin-bottom:15px">Transactions <button class="btn btn-danger" style="float:right;padding:5px 12px;font-size:0.8rem" onclick="clearAll()">Clear All</button></h3>
+    <h3 style="margin-bottom:15px">Transactions <button class="btn btn-danger" style="float:right;padding:5px 12px;font-size:0.8rem" onclick="clearAll()"><i class="fas fa-trash"></i> Clear All</button></h3>
     <div id="txList"><div class="text-muted" style="text-align:center;padding:30px">No transactions yet.</div></div>
   </div>
 </div>
-
 <script type="module" src="firebase-config.js"></script>
 <script>
 var txs = JSON.parse(localStorage.getItem('budget_txs') || '[]');
-
 function addTransaction() {
   var desc = document.getElementById('txDesc').value.trim();
   var amt = parseFloat(document.getElementById('txAmount').value);
-  if (!desc || !amt || amt <= 0) {
-    alert('Please enter a description and a valid amount.');
-    return;
-  }
-  txs.push({
-    id: Date.now(),
-    desc: desc,
-    amount: amt,
-    type: document.getElementById('txType').value,
-    category: document.getElementById('txCategory').value,
-    date: new Date().toLocaleDateString()
-  });
+  if (!desc || !amt || amt <= 0) { alert('Please enter a description and a valid amount.'); return; }
+  txs.push({ id: Date.now(), desc: desc, amount: amt, type: document.getElementById('txType').value, category: document.getElementById('txCategory').value, date: new Date().toLocaleDateString() });
   document.getElementById('txDesc').value = '';
   document.getElementById('txAmount').value = '';
   save();
 }
-
-function deleteTransaction(id) {
-  txs = txs.filter(function(t) { return t.id !== id; });
-  save();
-}
-
-function clearAll() {
-  if (confirm('Clear all transactions? This cannot be undone.')) {
-    txs = [];
-    save();
-  }
-}
-
-function save() {
-  localStorage.setItem('budget_txs', JSON.stringify(txs));
-  render();
-}
-
-function escapeHtml(str) {
-  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
-
+function deleteTransaction(id) { txs = txs.filter(function(t) { return t.id !== id; }); save(); }
+function clearAll() { if (confirm('Clear all transactions? This cannot be undone.')) { txs = []; save(); } }
+function save() { localStorage.setItem('budget_txs', JSON.stringify(txs)); render(); }
+function escapeHtml(str) { return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 function render() {
   var income = 0, expense = 0;
-  for (var i = 0; i < txs.length; i++) {
-    if (txs[i].type === 'income') income += txs[i].amount;
-    else expense += txs[i].amount;
-  }
+  for (var i = 0; i < txs.length; i++) { if (txs[i].type === 'income') income += txs[i].amount; else expense += txs[i].amount; }
   var bal = income - expense;
   document.getElementById('totalIncome').textContent = '$' + income.toFixed(2);
   document.getElementById('totalExpense').textContent = '$' + expense.toFixed(2);
   var balEl = document.getElementById('balance');
   balEl.textContent = (bal >= 0 ? '$' : '-$') + Math.abs(bal).toFixed(2);
   balEl.style.color = bal >= 0 ? '#3fb950' : '#f85149';
-
   var list = document.getElementById('txList');
-  if (txs.length === 0) {
-    list.innerHTML = '<div class="text-muted" style="text-align:center;padding:30px">No transactions yet.</div>';
-    return;
-  }
+  if (txs.length === 0) { list.innerHTML = '<div class="text-muted" style="text-align:center;padding:30px">No transactions yet.</div>'; return; }
   var reversed = txs.slice().reverse();
   var html = '';
   for (var j = 0; j < reversed.length; j++) {
     var t = reversed[j];
     var color = t.type === 'income' ? '#3fb950' : '#f85149';
     var sign = t.type === 'income' ? '+' : '-';
-    html += '<div style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid #30363d">';
-    html += '<div>';
-    html += '<div style="font-weight:500">' + escapeHtml(t.desc) + '</div>';
-    html += '<div class="text-muted" style="font-size:0.75rem">' + escapeHtml(t.category) + ' &middot; ' + escapeHtml(t.date) + '</div>';
-    html += '</div>';
+    var icon = t.type === 'income' ? 'fa-arrow-up' : 'fa-arrow-down';
+    html += '<div style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid var(--border);animation:fadeIn 0.3s ease">';
     html += '<div style="display:flex;align-items:center;gap:12px">';
-    html += '<span style="font-weight:700;color:' + color + '">' + sign + '$' + t.amount.toFixed(2) + '</span>';
+    html += '<div style="width:36px;height:36px;border-radius:50%;background:' + color + '22;display:flex;align-items:center;justify-content:center;color:' + color + '"><i class="fas ' + icon + '"></i></div>';
+    html += '<div><div style="font-weight:500">' + escapeHtml(t.desc) + '</div>';
+    html += '<div class="text-muted" style="font-size:0.75rem">' + escapeHtml(t.category) + ' &middot; ' + escapeHtml(t.date) + '</div></div></div>';
+    html += '<div style="display:flex;align-items:center;gap:12px">';
+    html += '<span style="font-weight:700;font-size:1.1rem;color:' + color + '">' + sign + '$' + t.amount.toFixed(2) + '</span>';
     html += '<button class="btn btn-danger" style="padding:4px 10px;font-size:0.75rem" onclick="deleteTransaction(' + t.id + ')"><i class="fas fa-trash"></i></button>';
     html += '</div></div>';
   }
   list.innerHTML = html;
 }
-
 function toggleTheme() {
   document.body.classList.toggle('light');
   var icon = document.querySelector('.theme-toggle i');
-  icon.classList.toggle('fa-moon');
-  icon.classList.toggle('fa-sun');
+  icon.classList.toggle('fa-moon'); icon.classList.toggle('fa-sun');
   localStorage.setItem('theme', document.body.classList.contains('light') ? 'light' : 'dark');
 }
 if (localStorage.getItem('theme') === 'light') {
   document.body.classList.add('light');
   document.querySelector('.theme-toggle i').classList.replace('fa-moon', 'fa-sun');
 }
-
 render();
 </script>
 </body>
