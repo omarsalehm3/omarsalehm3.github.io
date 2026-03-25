@@ -1,1 +1,190 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>Weather | OGuard Hub</title><link rel="stylesheet" href="style.css"><link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"><style>.weather-main{text-align:center;padding:30px 0}.weather-temp{font-size:5rem;font-weight:300;color:#58a6ff}.weather-icon{font-size:4rem;margin:10px 0}.weather-desc{font-size:1.2rem;color:#8b949e;text-transform:capitalize;margin-bottom:5px}.weather-city{font-size:1.5rem;font-weight:600;margin-bottom:5px}.weather-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px;margin-top:20px}.weather-stat{background:rgba(88,166,255,0.08);border:1px solid #30363d;border-radius:10px;padding:14px;text-align:center}.weather-stat .label{font-size:0.75rem;color:#8b949e;margin-bottom:4px}.weather-stat .value{font-size:1.1rem;font-weight:600}</style></head><body><nav class="navbar"><div class="nav-brand"><a href="index.html" style="color:inherit;text-decoration:none"><i class="fas fa-shield-alt"></i> OGuard Hub</a></div><div class="nav-links"><a href="index.html"><i class="fas fa-home"></i> Home</a><a href="todo.html"><i class="fas fa-check-square"></i> To-Do</a><a href="timer.html"><i class="fas fa-clock"></i> Timer</a><a href="converter.html"><i class="fas fa-exchange-alt"></i> Converter</a><a href="budget.html"><i class="fas fa-wallet"></i> Budget</a><a href="quiz.html"><i class="fas fa-question-circle"></i> Quiz</a><a href="notes.html"><i class="fas fa-sticky-note"></i> Notes</a><a href="weather.html"><i class="fas fa-cloud-sun"></i> Weather</a><a href="chatbot.html"><i class="fas fa-robot"></i> AI Chat</a></div><div class="flex" style="gap:8px;align-items:center"><span id="navUser" style="display:none;font-size:0.85rem;color:#8b949e"></span><button class="btn btn-secondary" style="padding:6px 14px;font-size:0.8rem" onclick="logoutUser()"><i class="fas fa-sign-out-alt"></i> Logout</button><button class="theme-toggle" onclick="toggleTheme()"><i class="fas fa-moon"></i></button></div></nav><div class="page-header"><h1><i class="fas fa-cloud-sun"></i> Weather</h1><p>Check current weather for any city</p></div><div class="container"><div class="card"><div class="flex flex-wrap" style="gap:10px"><input type="text" id="cityInput" placeholder="Enter city name (e.g. London, Cairo, New York)..." style="flex:1"><button class="btn btn-primary" onclick="getWeather()"><i class="fas fa-search"></i> Search</button><button class="btn btn-secondary" onclick="getByLocation()"><i class="fas fa-location-arrow"></i> My Location</button></div></div><div id="weatherResult"></div><div class="card mt-2"><h3 style="margin-bottom:12px"><i class="fas fa-key"></i> API Setup</h3><p class="text-muted">Get a free API key from <a href="https://openweathermap.org/api" target="_blank" style="color:#58a6ff">OpenWeatherMap</a> and enter it below:</p><div class="flex mt-2" style="gap:10px"><input type="text" id="apiKeyInput" placeholder="Enter your free OpenWeatherMap API key..."><button class="btn btn-success" onclick="saveApiKey()"><i class="fas fa-save"></i> Save Key</button></div><div id="apiStatus" class="text-muted mt-1"></div></div></div><script type="module" src="firebase-config.js"></script><script>let apiKey=localStorage.getItem("owm_key")||"";if(apiKey){document.getElementById("apiKeyInput").value=apiKey;document.getElementById("apiStatus").textContent="API key saved!";document.getElementById("apiStatus").style.color="#3fb950";}function saveApiKey(){apiKey=document.getElementById("apiKeyInput").value.trim();if(apiKey){localStorage.setItem("owm_key",apiKey);document.getElementById("apiStatus").textContent="Saved!";document.getElementById("apiStatus").style.color="#3fb950";}else{document.getElementById("apiStatus").textContent="Please enter a valid key.";document.getElementById("apiStatus").style.color="#f85149";}}async function getWeather(){const city=document.getElementById("cityInput").value.trim();if(!city)return;if(!apiKey){document.getElementById("weatherResult").innerHTML="<div class="card" style="text-align:center;color:#d29922"><i class="fas fa-key" style="font-size:2rem"></i><br><br>Please enter your API key below first!</div>";return;}document.getElementById("weatherResult").innerHTML="<div class="card" style="text-align:center;padding:40px"><i class="fas fa-spinner fa-spin" style="font-size:2rem;color:#58a6ff"></i><br><br>Loading...</div>";try{const r=await fetch("https://api.openweathermap.org/data/2.5/weather?q="+encodeURIComponent(city)+"&appid="+apiKey+"&units=metric");if(!r.ok)throw new Error("City not found");const d=await r.json();showWeather(d);}catch(e){document.getElementById("weatherResult").innerHTML="<div class="card" style="text-align:center;color:#f85149"><i class="fas fa-exclamation-circle" style="font-size:2rem"></i><br><br>"+e.message+"</div>";}}async function getByLocation(){if(!apiKey){document.getElementById("weatherResult").innerHTML="<div class="card" style="text-align:center;color:#d29922">Please enter your API key first!</div>";return;}if(!navigator.geolocation){alert("Geolocation not supported");return;}document.getElementById("weatherResult").innerHTML="<div class="card" style="text-align:center;padding:40px"><i class="fas fa-spinner fa-spin" style="font-size:2rem;color:#58a6ff"></i><br><br>Getting location...</div>";navigator.geolocation.getCurrentPosition(async function(pos){try{const r=await fetch("https://api.openweathermap.org/data/2.5/weather?lat="+pos.coords.latitude+"&lon="+pos.coords.longitude+"&appid="+apiKey+"&units=metric");const d=await r.json();showWeather(d);}catch(e){document.getElementById("weatherResult").innerHTML="<div class="card" style="text-align:center;color:#f85149">Error fetching weather</div>";}});}function showWeather(d){const icons={Clear:"fa-sun",Clouds:"fa-cloud",Rain:"fa-cloud-rain",Snow:"fa-snowflake",Thunderstorm:"fa-bolt",Drizzle:"fa-cloud-drizzle",Mist:"fa-smog",Fog:"fa-smog"};const icon=icons[d.weather[0].main]||"fa-cloud";const sunrise=new Date(d.sys.sunrise*1000).toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"});const sunset=new Date(d.sys.sunset*1000).toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"});document.getElementById("weatherResult").innerHTML="<div class="card"><div class="weather-main"><div class="weather-city">"+d.name+", "+d.sys.country+"</div><div class="weather-icon"><i class="fas "+icon+"" style="color:#58a6ff"></i></div><div class="weather-temp">"+Math.round(d.main.temp)+"°C</div><div class="weather-desc">"+d.weather[0].description+"</div><div class="text-muted">Feels like "+Math.round(d.main.feels_like)+"°C</div></div><div class="weather-grid"><div class="weather-stat"><div class="label">Humidity</div><div class="value">"+d.main.humidity+"%</div></div><div class="weather-stat"><div class="label">Wind</div><div class="value">"+d.wind.speed+" m/s</div></div><div class="weather-stat"><div class="label">Pressure</div><div class="value">"+d.main.pressure+" hPa</div></div><div class="weather-stat"><div class="label">Visibility</div><div class="value">"+(d.visibility/1000).toFixed(1)+" km</div></div><div class="weather-stat"><div class="label">Min/Max</div><div class="value">"+Math.round(d.main.temp_min)+"/"+Math.round(d.main.temp_max)+"°C</div></div><div class="weather-stat"><div class="label">Sunrise</div><div class="value">"+sunrise+"</div></div><div class="weather-stat"><div class="label">Sunset</div><div class="value">"+sunset+"</div></div><div class="weather-stat"><div class="label">Clouds</div><div class="value">"+d.clouds.all+"%</div></div></div></div>";}document.getElementById("cityInput").addEventListener("keypress",function(e){if(e.key==="Enter")getWeather();});function toggleTheme(){document.body.classList.toggle("light");const icon=document.querySelector(".theme-toggle i");icon.classList.toggle("fa-moon");icon.classList.toggle("fa-sun");localStorage.setItem("theme",document.body.classList.contains("light")?"light":"dark");}if(localStorage.getItem("theme")==="light"){document.body.classList.add("light");document.querySelector(".theme-toggle i").classList.replace("fa-moon","fa-sun");}</script></body></html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Weather | OGuard Hub</title>
+<link rel="stylesheet" href="style.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+.weather-main{text-align:center;padding:30px 20px}
+.weather-icon{font-size:5rem;margin-bottom:10px;animation:floatIcon 3s ease-in-out infinite}
+@keyframes floatIcon{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+.weather-temp{font-size:4rem;font-weight:200;line-height:1}
+.weather-desc{font-size:1.1rem;color:var(--text2);margin-top:6px;text-transform:capitalize}
+.weather-city{font-size:1.3rem;font-weight:600;margin-top:4px}
+.weather-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:12px;margin-top:20px}
+.weather-stat{background:rgba(88,166,255,0.08);border:1px solid var(--border);border-radius:12px;padding:14px;text-align:center}
+.weather-stat .stat-icon{font-size:1.4rem;margin-bottom:6px;color:var(--blue)}
+.weather-stat .stat-val{font-size:1rem;font-weight:600}
+.weather-stat .stat-lbl{font-size:0.72rem;color:var(--text2);margin-top:2px}
+.forecast-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(90px,1fr));gap:10px;margin-top:16px}
+.forecast-card{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:12px;text-align:center;font-size:0.82rem}
+.forecast-day{font-weight:600;color:var(--text2)}
+.forecast-icon{font-size:1.5rem;margin:6px 0}
+.forecast-hi{font-weight:600}
+.forecast-lo{color:var(--text2)}
+.search-bar{display:flex;gap:10px;max-width:500px;margin:0 auto 16px}
+</style>
+</head>
+<body>
+<nav class="navbar">
+  <div class="nav-brand">
+    <div class="nav-brand-icon"><i class="fas fa-shield-alt"></i></div>
+    <a href="index.html" style="color:inherit;text-decoration:none;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent">OGuard Hub</a>
+  </div>
+  <div class="nav-links">
+    <a href="index.html"><i class="fas fa-home"></i> Home</a>
+    <div class="nav-dropdown">
+      <button class="nav-dropdown-btn"><i class="fas fa-th-large"></i> Tools <i class="fas fa-chevron-down" style="font-size:0.7rem;margin-left:2px"></i></button>
+      <div class="nav-dropdown-menu">
+        <a href="todo.html"><i class="fas fa-check-square"></i> To-Do List</a>
+        <a href="timer.html"><i class="fas fa-clock"></i> Pomodoro Timer</a>
+        <a href="budget.html"><i class="fas fa-wallet"></i> Budget</a>
+        <a href="notes.html"><i class="fas fa-sticky-note"></i> Notes</a>
+        <a href="habits.html"><i class="fas fa-fire"></i> Habits</a>
+        <a href="converter.html"><i class="fas fa-exchange-alt"></i> Converter</a>
+        <a href="passwords.html"><i class="fas fa-key"></i> Passwords</a>
+        <a href="calculator.html"><i class="fas fa-calculator"></i> Calculator</a>
+        <a href="flashcards.html"><i class="fas fa-layer-group"></i> Flashcards</a>
+        <a href="weather.html" class="active"><i class="fas fa-cloud-sun"></i> Weather</a>
+        <a href="workout.html"><i class="fas fa-dumbbell"></i> Workout</a>
+      </div>
+    </div>
+    <a href="chatbot.html"><i class="fas fa-robot"></i> AI Chat</a>
+  </div>
+  <div class="nav-right">
+    <span id="navUser" style="display:none;font-size:0.82rem;color:var(--text2)"></span>
+    <button class="btn btn-secondary" style="padding:6px 14px;font-size:0.8rem" onclick="logoutUser()"><i class="fas fa-sign-out-alt"></i> Logout</button>
+    <button class="theme-toggle" onclick="toggleTheme()"><i class="fas fa-moon"></i></button>
+  </div>
+</nav>
+<div class="page-header">
+  <div class="page-header-inner">
+    <div class="page-icon"><i class="fas fa-cloud-sun"></i></div>
+    <div><h1>Weather</h1><p>Current conditions and 5-day forecast</p></div>
+  </div>
+</div>
+<div class="container">
+  <div class="search-bar">
+    <input type="text" id="cityInput" placeholder="Enter city name..." style="flex:1" onkeypress="if(event.key==='Enter')searchWeather()">
+    <button class="btn btn-primary" onclick="searchWeather()"><i class="fas fa-search"></i> Search</button>
+    <button class="btn btn-secondary" onclick="getLocation()" title="Use my location"><i class="fas fa-location-arrow"></i></button>
+  </div>
+  <div id="weatherCard" style="display:none">
+    <div class="card">
+      <div class="weather-main">
+        <div class="weather-icon" id="wIcon">&#x1F324;</div>
+        <div class="weather-temp"><span id="wTemp">--</span><span style="font-size:1.8rem">&#xB0;C</span></div>
+        <div class="weather-city" id="wCity">--</div>
+        <div class="weather-desc" id="wDesc">--</div>
+      </div>
+      <div class="weather-stats">
+        <div class="weather-stat"><div class="stat-icon"><i class="fas fa-tint"></i></div><div class="stat-val" id="wHumidity">--%</div><div class="stat-lbl">Humidity</div></div>
+        <div class="weather-stat"><div class="stat-icon"><i class="fas fa-wind"></i></div><div class="stat-val" id="wWind">-- km/h</div><div class="stat-lbl">Wind</div></div>
+        <div class="weather-stat"><div class="stat-icon"><i class="fas fa-eye"></i></div><div class="stat-val" id="wVis">-- km</div><div class="stat-lbl">Visibility</div></div>
+        <div class="weather-stat"><div class="stat-icon"><i class="fas fa-temperature-low"></i></div><div class="stat-val" id="wFeels">--&#xB0;</div><div class="stat-lbl">Feels Like</div></div>
+        <div class="weather-stat"><div class="stat-icon"><i class="fas fa-compress-arrows-alt"></i></div><div class="stat-val" id="wPressure">-- hPa</div><div class="stat-lbl">Pressure</div></div>
+        <div class="weather-stat"><div class="stat-icon"><i class="fas fa-cloud"></i></div><div class="stat-val" id="wClouds">--%</div><div class="stat-lbl">Clouds</div></div>
+      </div>
+    </div>
+    <div class="card mt-2">
+      <h3 style="margin-bottom:12px">5-Day Forecast</h3>
+      <div class="forecast-grid" id="forecastGrid"></div>
+    </div>
+  </div>
+  <div id="weatherError" class="card" style="display:none;text-align:center;padding:40px">
+    <i class="fas fa-exclamation-triangle" style="font-size:2rem;color:#f85149;margin-bottom:12px"></i>
+    <div id="errorMsg">City not found. Please try again.</div>
+  </div>
+  <div id="weatherEmpty" class="card" style="text-align:center;padding:50px">
+    <div style="font-size:4rem;margin-bottom:12px">&#x1F324;</div>
+    <div style="font-size:1.1rem;font-weight:500;margin-bottom:6px">Check the weather anywhere</div>
+    <div class="text-muted">Search for a city or use your location</div>
+  </div>
+</div>
+<script type="module" src="firebase-config.js"></script>
+<script>
+var API_KEY = 'bd5e378503939ddaee76f12ad7a97608';
+var weatherIcons = {
+  '01d':'&#x2600;','01n':'&#x1F319;','02d':'&#x26C5;','02n':'&#x1F319;',
+  '03d':'&#x2601;','03n':'&#x2601;','04d':'&#x1F325;','04n':'&#x1F325;',
+  '09d':'&#x1F327;','09n':'&#x1F327;','10d':'&#x1F326;','10n':'&#x1F327;',
+  '11d':'&#x26C8;','11n':'&#x26C8;','13d':'&#x2744;','13n':'&#x2744;',
+  '50d':'&#x1F32B;','50n':'&#x1F32B;'
+};
+var days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+function searchWeather() {
+  var city = document.getElementById('cityInput').value.trim();
+  if (!city) return;
+  localStorage.setItem('lastWeatherCity', city);
+  fetchWeather('q=' + encodeURIComponent(city));
+}
+function getLocation() {
+  if (!navigator.geolocation) { alert('Geolocation not supported'); return; }
+  navigator.geolocation.getCurrentPosition(function(pos) {
+    fetchWeather('lat=' + pos.coords.latitude + '&lon=' + pos.coords.longitude);
+  }, function() { alert('Could not get location'); });
+}
+async function fetchWeather(query) {
+  document.getElementById('weatherCard').style.display = 'none';
+  document.getElementById('weatherError').style.display = 'none';
+  document.getElementById('weatherEmpty').style.display = 'none';
+  try {
+    var r = await fetch('https://api.openweathermap.org/data/2.5/weather?' + query + '&appid=' + API_KEY + '&units=metric');
+    var data = await r.json();
+    if (data.cod !== 200) throw new Error(data.message || 'City not found');
+    showWeather(data);
+    fetchForecast(data.coord.lat, data.coord.lon);
+  } catch(e) {
+    document.getElementById('weatherError').style.display = 'block';
+    document.getElementById('errorMsg').textContent = e.message || 'Error fetching weather';
+  }
+}
+function showWeather(d) {
+  document.getElementById('weatherCard').style.display = 'block';
+  var icon = d.weather[0].icon;
+  document.getElementById('wIcon').innerHTML = weatherIcons[icon] || '&#x1F324;';
+  document.getElementById('wTemp').textContent = Math.round(d.main.temp);
+  document.getElementById('wCity').textContent = d.name + ', ' + d.sys.country;
+  document.getElementById('wDesc').textContent = d.weather[0].description;
+  document.getElementById('wHumidity').textContent = d.main.humidity + '%';
+  document.getElementById('wWind').textContent = Math.round(d.wind.speed * 3.6) + ' km/h';
+  document.getElementById('wVis').textContent = d.visibility ? (d.visibility / 1000).toFixed(1) + ' km' : '--';
+  document.getElementById('wFeels').innerHTML = Math.round(d.main.feels_like) + '&#xB0;';
+  document.getElementById('wPressure').textContent = d.main.pressure + ' hPa';
+  document.getElementById('wClouds').textContent = d.clouds.all + '%';
+}
+async function fetchForecast(lat, lon) {
+  try {
+    var r = await fetch('https://api.openweathermap.org/data/2.5/forecast?lat=' + lat + '&lon=' + lon + '&appid=' + API_KEY + '&units=metric');
+    var data = await r.json();
+    var daily = {};
+    data.list.forEach(function(item) {
+      var d = item.dt_txt.split(' ')[0];
+      if (!daily[d]) daily[d] = {hi: item.main.temp_max, lo: item.main.temp_min, icon: item.weather[0].icon, date: new Date(d + 'T12:00:00')};
+      else { if (item.main.temp_max > daily[d].hi) daily[d].hi = item.main.temp_max; if (item.main.temp_min < daily[d].lo) daily[d].lo = item.main.temp_min; }
+    });
+    var keys = Object.keys(daily).slice(0, 5);
+    document.getElementById('forecastGrid').innerHTML = keys.map(function(k) {
+      var day = daily[k];
+      return '<div class="forecast-card"><div class="forecast-day">' + days[day.date.getDay()] + '</div>' +
+        '<div class="forecast-icon">' + (weatherIcons[day.icon] || '&#x1F324;') + '</div>' +
+        '<div class="forecast-hi">' + Math.round(day.hi) + '&#xB0;</div>' +
+        '<div class="forecast-lo">' + Math.round(day.lo) + '&#xB0;</div></div>';
+    }).join('');
+  } catch(e) {}
+}
+function toggleTheme() {
+  document.body.classList.toggle('light');
+  var icon = document.querySelector('.theme-toggle i');
+  icon.classList.toggle('fa-moon'); icon.classList.toggle('fa-sun');
+  localStorage.setItem('theme', document.body.classList.contains('light') ? 'light' : 'dark');
+}
+if (localStorage.getItem('theme') === 'light') { document.body.classList.add('light'); document.querySelector('.theme-toggle i').classList.replace('fa-moon','fa-sun'); }
+var lastCity = localStorage.getItem('lastWeatherCity');
+if (lastCity) { document.getElementById('cityInput').value = lastCity; searchWeather(); }
+</script>
+</body>
+</html>
